@@ -1,0 +1,69 @@
+'use client';
+
+import React from 'react';
+
+export const MainFooter = () => {
+  return (
+    <footer className="w-full bg-[#F9FAFB] border-t border-border-standard/20 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          {/* Logo & Info Section */}
+          <div className="col-span-1 lg:col-span-1 space-y-6">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-primary-900 leading-none tracking-tighter uppercase italic">Liberté • Égalité • Fraternité</span>
+              <div className="h-0.5 w-12 bg-primary-600 my-0.5" />
+              <span className="text-sm font-extrabold text-primary tracking-tight">RÉPUBLIQUE FRANÇAISE</span>
+            </div>
+            <p className="text-sm text-content-muted leading-relaxed font-medium">
+              Une plateforme gouvernementale dédiée au soutien à la parentalité.
+            </p>
+          </div>
+
+          {/* Useful Links */}
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Informations</h3>
+            <nav className="flex flex-col gap-3">
+              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Plan du site</a>
+              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Accessibilité : non conforme</a>
+              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Mentions légales</a>
+            </nav>
+          </div>
+
+          {/* Quick Access */}
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Aide & Contact</h3>
+            <nav className="flex flex-col gap-3">
+              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Nous contacter</a>
+              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">FAQ</a>
+            </nav>
+          </div>
+
+          {/* Social & Newsletter */}
+          <div className="space-y-6">
+            <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Suivez-nous</h3>
+            <div className="flex gap-4">
+              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm">
+                <div className="w-3 h-3 bg-primary/40 rounded-sm" />
+              </div>
+              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm">
+                <div className="w-3 h-3 bg-primary/40 rounded-sm rotate-45" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-border-standard/20 pt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+          <p className="text-[10px] font-bold text-content-subtle uppercase tracking-widest leading-none">
+            © 2026 (RE)SOURCES RELATIONNELLES
+          </p>
+          <div className="flex items-center gap-6">
+            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">service-public.fr</span>
+            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">data.gouv.fr</span>
+            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">france.fr</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};

@@ -1,2 +1,54 @@
 @import "tailwindcss";
 
+@theme {
+  /* Primary : Bleu Nuit */
+  --color-primary-50: #EBF1F6;
+  --color-primary-100: #D3E0EC;
+  --color-primary-200: #A8C1D9;
+  --color-primary-300: #7DA2C6;
+  --color-primary-400: #5283B3;
+  --color-primary-500: #2764A0;
+  --color-primary-600: #1F4E79;
+  --color-primary: #1F4E79; /* DEFAULT */
+  --color-primary-700: #183C5D;
+  --color-primary-800: #102A41;
+  --color-primary-900: #091825;
+
+  /* Secondary : Jaune Moutarde */
+  --color-secondary-50: #FFF9EC;
+  --color-secondary-100: #FEF0CF;
+  --color-secondary-200: #FDE29F;
+  --color-secondary-300: #FBD36F;
+  --color-secondary-400: #F2B73F;
+  --color-secondary: #F2B73F; /* DEFAULT */
+  --color-secondary-500: #E6A11D;
+  --color-secondary-600: #C28618;
+  --color-secondary-700: #9E6C13;
+  --color-secondary-800: #7A530E;
+  --color-secondary-900: #563A0A;
+
+  /* Surfaces : Style "Linear/Vercel" - Blanc pur et gris très subtils */
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F8FAFC; /* Slate 50 */
+  --color-surface-sunken: #F1F5F9; /* Slate 100 */
+
+  /* Content : Contraste maximal mais doux */
+  --color-content: #020617; /* Slate 950 */
+  --color-content-muted: #475569; /* Slate 600 */
+  --color-content-subtle: #64748B; /* Slate 500 */
+  --color-content-inverse: #FFFFFF;
+
+  /* Statuts : Tons vifs mais élégants */
+  --color-success: #059669;
+  --color-success-subtle: #ECFDF5;
+  --color-danger: #E11D48;
+  --color-danger-subtle: #FFF1F2;
+  --color-warning: #D97706;
+  --color-warning-subtle: #FFFBEB;
+  --color-info: #2563EB;
+  --color-info-subtle: #EFF6FF;
+
+  /* Borders : Extrêmement fines */
+  --color-border-standard: #E2E8F0; /* Slate 200 */
+  --color-border-focus: #3B82F6; /* Focus ring standard moderne (Bleu) */
+}
