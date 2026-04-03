@@ -9,13 +9,12 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function CatalogPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [sortBy, setSortBy] = useState('recent');
 
   const mockResources: ResourceCardProps[] = [
     {
@@ -106,15 +105,6 @@ export default function CatalogPage() {
     return matchesSearch && matchesCategory && matchesType;
   });
 
-  const sortedResources = [...filteredResources].sort((a, b) => {
-    if (sortBy === 'recent') {
-      return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-    } else if (sortBy === 'alpha') {
-      return a.title.localeCompare(b.title);
-    }
-    return 0;
-  });
-
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
       <MainHeader />
@@ -124,38 +114,38 @@ export default function CatalogPage() {
         description="Explorez plus de 1000 ressources sélectionnées et validées par des experts"
         showBackButton={false}
         actions={
-          <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-4 h-8 rounded-lg text-xs transition-all flex items-center gap-2">
+          <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-4 h-8 rounded-xl text-xs transition-all flex items-center gap-2">
             <Plus className="w-3 h-3" />
             Créer
           </Button>
         }
       />
 
-      <main className="flex-grow">
+      <main className="grow">
 
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Search & Filters */}
-          <div className="bg-white p-6 rounded-2xl border border-border-standard/60 shadow-sm space-y-4 mb-8">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 mb-8">
             <div className="grid w-full items-center gap-2">
-              <Label htmlFor="search-input" className="text-xs font-semibold text-content">Rechercher par mot-clé</Label>
+              <Label htmlFor="search-input" className="text-xs font-semibold text-gray-600">Rechercher par mot-clé</Label>
               <Input
                 type="text"
                 id="search-input"
                 placeholder="Ex: Éducation, Parentalité, Santé..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-11 border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content placeholder:text-content-subtle px-4"
+                className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50 font-medium text-content placeholder:text-content-subtle px-4"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid w-full items-center gap-2">
-                <Label className="text-xs font-semibold text-content">Catégorie</Label>
+                <Label className="text-xs font-semibold text-gray-600">Catégorie</Label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors"
+                  className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors outline-none focus:ring-1 focus:ring-primary/20"
                 >
                   <option value="all">Toutes les catégories</option>
                   <option value="Éducation">Éducation</option>
@@ -167,11 +157,11 @@ export default function CatalogPage() {
                 </select>
               </div>
               <div className="grid w-full items-center gap-2">
-                <Label className="text-xs font-semibold text-content">Type de média</Label>
+                <Label className="text-xs font-semibold text-gray-600">Type de média</Label>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors"
+                  className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors outline-none focus:ring-1 focus:ring-primary/20"
                 >
                   <option value="all">Tous les formats</option>
                   <option value="video">Vidéo</option>
@@ -211,7 +201,7 @@ export default function CatalogPage() {
           ) : (
             <div className="text-center py-16">
               <p className="text-content-muted text-lg font-medium">Aucune ressource ne correspond à votre recherche.</p>
-              <p className="text-content-subtle text-sm mt-2">Essayez d'ajuster vos filtres.</p>
+              <p className="text-content-subtle text-sm mt-2">Essayez d&apos;ajuster vos filtres.</p>
             </div>
           )}
         </div>

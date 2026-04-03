@@ -1,11 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -62,7 +60,6 @@ export const ResourceCard = ({
   duration,
   author,
   isNew,
-  fileSize,
   onAction,
   className
 }: ResourceCardProps) => {
@@ -79,10 +76,11 @@ export const ResourceCard = ({
       <div className="relative w-full aspect-video bg-surface-muted m-0 p-0 overflow-hidden rounded-t-2xl">
         <div className="absolute inset-0 w-full h-full">
           {imageUrl ? (
-            <img
+            <Image
               src={imageUrl}
               alt={title}
-              className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-content-subtle opacity-50">

@@ -83,7 +83,7 @@ export default function AdminModerationPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
 
         {/* Info Alert */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+        <div className="bg-blue-50/70 border border-blue-100 rounded-2xl shadow-sm p-4 mb-8">
           <p className="text-blue-800 text-sm">
             <span className="font-semibold">{resources.length} ressource(s)</span> en attente de validation
           </p>
@@ -93,7 +93,7 @@ export default function AdminModerationPage() {
         {resources.length > 0 ? (
           <div className="space-y-6">
             {resources.map((resource) => (
-              <div key={resource.id} className="bg-white rounded-xl border border-border-standard/60 shadow-sm overflow-hidden">
+              <div key={resource.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
                 {/* Resource Card */}
                 <div className="p-6 space-y-4">
@@ -114,7 +114,7 @@ export default function AdminModerationPage() {
                   </div>
 
                   {/* Meta Info */}
-                  <div className="flex flex-wrap gap-4 text-sm text-content-muted border-y border-border-standard/30 py-4">
+                  <div className="flex flex-wrap gap-4 text-sm text-content-muted border-y border-gray-100 py-4">
                     <div>
                       <span className="font-semibold text-content">Catégorie :</span> {resource.category}
                     </div>
@@ -135,25 +135,25 @@ export default function AdminModerationPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 pt-4 border-t border-border-standard/30">
+                  <div className="flex gap-3 pt-4 border-t border-gray-100">
                     <Button
                       onClick={() => handlePreview(resource)}
                       variant="outline"
-                      className="flex items-center gap-2 bg-white text-content border-border-standard hover:bg-surface-muted h-10 rounded-lg font-semibold text-sm"
+                      className="flex items-center gap-2 bg-white border-gray-200 hover:bg-gray-50 hover:text-primary h-10 rounded-xl font-semibold text-sm transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                       Aperçu
                     </Button>
                     <Button
                       onClick={() => handleReject(resource.id)}
-                      className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 h-10 px-4 rounded-lg font-semibold text-sm transition-colors border-0"
+                      className="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 h-10 px-4 rounded-xl font-semibold text-sm transition-colors border border-red-100"
                     >
                       <XCircle className="w-4 h-4" />
                       Rejeter
                     </Button>
                     <Button
                       onClick={() => handleApprove(resource.id)}
-                      className="flex items-center gap-2 bg-green-100 text-green-600 hover:bg-green-200 h-10 px-4 rounded-lg font-semibold text-sm transition-colors border-0 ml-auto"
+                      className="flex items-center gap-2 bg-green-50 text-green-600 hover:bg-green-100 h-10 px-4 rounded-xl font-semibold text-sm transition-colors border border-green-100 ml-auto"
                     >
                       <CheckCircle className="w-4 h-4" />
                       Approuver
@@ -164,7 +164,7 @@ export default function AdminModerationPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-border-standard/60 shadow-sm p-12 text-center">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
             <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-content mb-2">Aucune ressource en attente</h3>
             <p className="text-content-muted text-sm">Toutes les ressources en attente de validation ont été traitées !</p>
@@ -172,16 +172,16 @@ export default function AdminModerationPage() {
         )}
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 pt-8 border-t border-border-standard/30">
-          <div className="bg-white p-6 rounded-lg border border-border-standard/60 shadow-sm text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 pt-8 border-t border-gray-100">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-3xl font-bold text-primary">{approvedCount}</p>
             <p className="text-content-muted text-sm mt-2">Ressources approuvées</p>
           </div>
-          <div className="bg-white p-6 rounded-lg border border-border-standard/60 shadow-sm text-center">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-3xl font-bold text-red-600">{rejectedCount}</p>
             <p className="text-content-muted text-sm mt-2">Ressources rejetées</p>
           </div>
-          <div className="bg-white p-6 rounded-lg border border-border-standard/60 shadow-sm text-center">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-3xl font-bold text-yellow-600">{resources.length}</p>
             <p className="text-content-muted text-sm mt-2">En attente</p>
           </div>
@@ -191,16 +191,16 @@ export default function AdminModerationPage() {
       {/* Preview Modal */}
       {previewData && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b border-border-standard/30 p-6 flex justify-between items-start gap-4">
+            <div className="sticky top-0 bg-gray-50/50 border-b border-gray-100 p-6 flex justify-between items-start gap-4">
               <div>
                 <h2 className="text-2xl font-bold text-content">{previewData.title}</h2>
                 <p className="text-content-muted text-sm mt-2">Par {previewData.author}</p>
               </div>
               <button
                 onClick={closePreview}
-                className="p-2 hover:bg-surface-muted rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                 title="Fermer"
               >
                 <X className="w-5 h-5 text-content-muted" />
@@ -234,7 +234,7 @@ export default function AdminModerationPage() {
               {/* Full Content */}
               <div>
                 <h3 className="font-semibold text-content mb-2">Aperçu du contenu</h3>
-                <div className="bg-surface-muted/50 p-4 rounded-lg border border-border-standard/30">
+                <div className="bg-gray-50/60 p-4 rounded-xl border border-gray-100">
                   <p className="text-content-muted text-sm leading-relaxed whitespace-pre-line">
                     {previewData.fullContent}
                   </p>
@@ -265,11 +265,11 @@ export default function AdminModerationPage() {
               </div>
 
               {/* Modal Actions */}
-              <div className="flex gap-3 pt-6 border-t border-border-standard/30">
+              <div className="flex gap-3 pt-6 border-t border-gray-100">
                 <Button
                   onClick={closePreview}
                   variant="outline"
-                  className="flex-1 bg-white text-content border-border-standard hover:bg-surface-muted h-10 rounded-lg font-semibold text-sm"
+                  className="flex-1 border-gray-200 hover:bg-gray-50 hover:text-primary h-10 rounded-xl font-semibold text-sm"
                 >
                   Fermer
                 </Button>
@@ -278,7 +278,7 @@ export default function AdminModerationPage() {
                     handleReject(previewData.id);
                     closePreview();
                   }}
-                  className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 h-10 px-6 rounded-lg font-semibold text-sm transition-colors border-0"
+                  className="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 h-10 px-6 rounded-xl font-semibold text-sm transition-colors border border-red-100"
                 >
                   <XCircle className="w-4 h-4" />
                   Rejeter
@@ -288,7 +288,7 @@ export default function AdminModerationPage() {
                     handleApprove(previewData.id);
                     closePreview();
                   }}
-                  className="flex items-center gap-2 bg-green-100 text-green-600 hover:bg-green-200 h-10 px-6 rounded-lg font-semibold text-sm transition-colors border-0"
+                  className="flex items-center gap-2 bg-green-50 text-green-600 hover:bg-green-100 h-10 px-6 rounded-xl font-semibold text-sm transition-colors border border-green-100"
                 >
                   <CheckCircle className="w-4 h-4" />
                   Approuver

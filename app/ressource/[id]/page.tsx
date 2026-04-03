@@ -6,7 +6,7 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
-import { Heart, Share2, AlertCircle, MapPin, Calendar } from 'lucide-react';
+import { Heart, Share2, AlertCircle, Calendar } from 'lucide-react';
 
 export default function RessourceDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = React.use(props.params);
@@ -19,8 +19,8 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
     title: "Comprendre la parentalité positive en 10 minutes",
     description: "Une exploration visuelle des concepts clés de la parentalité bienveillante, avec des conseils pratiques pour le quotidien.",
     fullContent: `
-      La parentalité positive est une approche qui se concentre sur le bien-être global de l'enfant et de la famille. 
-      Elle favorise le dialogue, l'écoute et le respect mutuel.
+      La parentalité positive est une approche qui se concentre sur le bien-être global de l&apos;enfant et de la famille. 
+      Elle favorise le dialogue, l&apos;écoute et le respect mutuel.
 
       Cette ressource vous permettra de découvrir :
       - Les principes fondamentaux de la parentalité bienveillante
@@ -85,8 +85,8 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
           <Button
             onClick={() => setIsFavorite(!isFavorite)}
             size="sm"
-            className={`flex items-center gap-1 h-8 px-3 rounded-lg font-semibold text-xs transition-all ${
-              isFavorite ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-content border-border-standard'
+            className={`flex items-center gap-1 h-8 px-3 rounded-xl font-semibold text-xs transition-all ${
+              isFavorite ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-content border-gray-200 hover:bg-gray-50'
             } border`}
           >
             <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
@@ -94,12 +94,12 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
         }
       />
 
-      <main className="flex-grow">
+      <main className="grow">
         {/* Content */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
 
           {/* Badge & Title */}
-          <div className="bg-white p-6 rounded-2xl border border-border-standard/60 shadow-sm space-y-3 mb-8">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 mb-8">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
                 {resource.category}
@@ -123,7 +123,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             </p>
 
             {/* Meta Info */}
-            <div className="flex flex-wrap gap-4 pt-3 text-xs text-content-muted border-t border-border-standard/30">
+            <div className="flex flex-wrap gap-4 pt-3 text-xs text-content-muted border-t border-gray-100">
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-content">Auteur :</span>
                 {resource.author}
@@ -143,14 +143,14 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2 pt-3 border-t border-border-standard/30">
-              <Button className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-lg text-sm transition-all">
+            <div className="flex gap-2 pt-3 border-t border-gray-100">
+              <Button className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all">
                 Consulter
               </Button>
               <Button
                 variant="outline"
                 onClick={handleShare}
-                className="h-10 px-3 rounded-lg font-semibold text-sm bg-white text-content border-border-standard hover:bg-surface-muted transition-all"
+                className="h-10 px-3 rounded-xl font-semibold text-sm bg-white text-content border-gray-200 hover:bg-gray-50 transition-all"
                 title="Partager"
               >
                 <Share2 size={16} />
@@ -164,7 +164,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             {/* Main Content - 2 colonnes */}
             <div className="lg:col-span-2 space-y-8">
               {/* Description complète */}
-              <section className="bg-white p-4 rounded-xl border border-border-standard/60 shadow-sm">
+              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                 <h2 className="text-lg font-bold text-content mb-3">À propos</h2>
                 <div className="text-content-muted text-sm leading-relaxed whitespace-pre-line">
                   {resource.fullContent}
@@ -172,11 +172,11 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
               </section>
 
               {/* Tags */}
-              <section className="bg-white p-4 rounded-xl border border-border-standard/60 shadow-sm">
+              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                 <h3 className="text-sm font-bold text-content mb-3">Mots-clés</h3>
                 <div className="flex flex-wrap gap-2">
                   {resource.tags.map((tag, idx) => (
-                    <span key={idx} className="px-2 py-1 bg-surface-muted rounded-full text-xs font-medium text-content-muted hover:bg-surface-muted/80 cursor-pointer transition-colors">
+                    <span key={idx} className="px-2.5 py-1 bg-gray-100/70 rounded-full text-xs font-medium text-content-muted hover:bg-gray-200/70 cursor-pointer transition-colors">
                       #{tag}
                     </span>
                   ))}
@@ -191,7 +191,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
                     <Link
                       key={related.id}
                       href={`/ressource/${related.id}`}
-                      className="block p-3 bg-white rounded-lg border border-border-standard/60 hover:border-primary/40 hover:shadow-sm transition-all"
+                      className="block p-3 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:shadow-sm transition-all"
                     >
                       <div className="flex justify-between items-start gap-3">
                         <div className="min-w-0">
@@ -202,7 +202,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
                             {related.category} • {related.type}
                           </p>
                         </div>
-                        <span className="text-primary text-sm flex-shrink-0">→</span>
+                        <span className="text-primary text-sm shrink-0">→</span>
                       </div>
                     </Link>
                   ))}
@@ -210,10 +210,10 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
               </section>
 
               {/* Reviews/Ratings Section */}
-              <section className="bg-white p-4 rounded-xl border border-border-standard/60 shadow-sm space-y-4">
+              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 <h2 className="text-lg font-bold text-content">Avis</h2>
 
-                <div className="grid grid-cols-3 gap-2 pb-4 border-b border-border-standard/30">
+                <div className="grid grid-cols-3 gap-2 pb-4 border-b border-gray-100">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-primary">{resource.rating}</p>
                     <p className="text-xs text-content-muted">sur 5 ⭐</p>
@@ -223,7 +223,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
                     <p className="text-xs text-content-muted">avis</p>
                   </div>
                   <div>
-                    <Button className="w-full bg-primary text-white hover:bg-primary-700 font-semibold h-8 rounded-lg text-xs">
+                    <Button className="w-full bg-primary text-white hover:bg-primary-700 font-semibold h-8 rounded-xl text-xs">
                       Ajouter
                     </Button>
                   </div>
@@ -232,7 +232,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
                 {/* Sample Reviews */}
                 <div className="space-y-2">
                   {[1, 2].map((review) => (
-                    <div key={review} className="p-3 bg-surface-muted/30 rounded-lg">
+                    <div key={review} className="p-3 bg-gray-50/70 rounded-xl border border-gray-100">
                       <div className="flex justify-between items-start mb-1">
                         <div>
                           <p className="font-semibold text-content text-sm">Jean Dupont</p>
@@ -253,12 +253,12 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             <div className="space-y-4">
 
               {/* Info Card */}
-              <div className="bg-white p-4 rounded-xl border border-border-standard/60 shadow-sm space-y-3">
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
                 <h3 className="font-bold text-content text-sm">Infos</h3>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-2 pb-2 border-b border-border-standard/30">
-                    <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
+                  <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                    <Calendar className="w-4 h-4 text-primary shrink-0" />
                     <div>
                       <p className="text-content-subtle">Publié</p>
                       <p className="text-content font-medium">{new Date(resource.createdAt).toLocaleDateString('fr-FR')}</p>
@@ -266,7 +266,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-primary flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-primary shrink-0" />
                     <div>
                       <p className="text-content-subtle text-xs">Type</p>
                       <p className="text-content font-medium text-xs capitalize">{resource.type}</p>
@@ -276,7 +276,7 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
               </div>
 
               {/* Accessibility Info */}
-              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 space-y-2">
+              <div className="bg-blue-50/70 p-3 rounded-2xl border border-blue-100 shadow-sm space-y-2">
                 <h3 className="font-bold text-blue-900 text-xs">♿ Accessible</h3>
                 <p className="text-xs text-blue-800 leading-relaxed">
                   Norme RGAA - sous-titres disponibles
@@ -287,9 +287,9 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
               </div>
 
               {/* Report Issue */}
-              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+              <div className="bg-yellow-50 p-3 rounded-2xl border border-yellow-100 shadow-sm">
                 <p className="text-xs text-yellow-900 font-medium mb-2">Problème d&apos;accès?</p>
-                <Button variant="outline" className="w-full bg-white text-yellow-900 border-yellow-200 hover:bg-yellow-100 text-xs font-semibold h-8 rounded-lg">
+                <Button variant="outline" className="w-full bg-white text-yellow-900 border-yellow-100 hover:bg-yellow-100 text-xs font-semibold h-8 rounded-xl">
                   Signaler
                 </Button>
               </div>

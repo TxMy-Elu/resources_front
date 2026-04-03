@@ -68,7 +68,7 @@ export const PageHeader = ({
   if (compact) {
     // Version ultra-compact pour pages comme détail ressource
     return (
-      <div className="bg-white border-b border-border-standard/20">
+      <div className="bg-[#FDFDFD] border-b border-gray-200 shadow-[0_1px_0_rgba(15,23,42,0.04)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-2 py-2">
             {showBackButton && (
@@ -98,7 +98,7 @@ export const PageHeader = ({
 
   // Version standard pour les pages admin
   return (
-    <div className="bg-white border-b border-border-standard/20">
+    <div className="bg-[#FDFDFD] border-b border-gray-200 shadow-[0_1px_0_rgba(15,23,42,0.04)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Breadcrumb - optionnel */}

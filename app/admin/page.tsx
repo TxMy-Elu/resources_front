@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
     {
       type: 'report',
       title: 'Signalement d\'accessibilité',
-      description: 'Un utilisateur a signalé un problème d\'accessibilité',
+      description: 'Un utilisateur a signalé un problème d&apos;accessibilité',
       time: 'Il y a 2 jours'
     }
   ];
@@ -76,16 +76,16 @@ export default function AdminDashboardPage() {
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-content mb-2">Tableau de Bord Administrateur</h1>
-            <p className="text-content-muted text-sm">Vue d'ensemble de la plateforme (RE)SOURCES</p>
+            <p className="text-content-muted text-sm">Vue d&apos;ensemble de la plateforme (RE)SOURCES</p>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, idx) => (
               <Link key={idx} href={stat.href}>
-                <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm hover:shadow-md transition-all cursor-pointer h-full">
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer h-full">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                    <div className="p-3 bg-primary/10 rounded-xl text-primary">
                       {stat.icon}
                     </div>
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
@@ -108,14 +108,14 @@ export default function AdminDashboardPage() {
 
             {/* Recent Activities */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl border border-border-standard/60 shadow-sm">
-                <div className="p-6 border-b border-border-standard/30">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                   <h2 className="text-xl font-bold text-content">Activités Récentes</h2>
                 </div>
 
-                <div className="divide-y divide-border-standard/20">
+                <div className="divide-y divide-gray-50">
                   {recentActivities.map((activity, idx) => (
-                    <div key={idx} className="p-4 hover:bg-surface-muted/20 transition-colors">
+                    <div key={idx} className="p-4 hover:bg-gray-50/50 transition-colors">
                       <div className="flex gap-4">
                         <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${
                           activity.type === 'user' ? 'bg-blue-500' :
@@ -133,7 +133,7 @@ export default function AdminDashboardPage() {
                   ))}
                 </div>
 
-                <div className="p-4 text-center border-t border-border-standard/30">
+                <div className="p-4 text-center border-t border-gray-100">
                   <a href="#" className="text-primary text-sm font-semibold hover:underline">Voir toutes les activités →</a>
                 </div>
               </div>
@@ -143,30 +143,30 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
 
               {/* Quick Actions */}
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm space-y-3">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
                 <h3 className="font-bold text-content mb-4">Actions Rapides</h3>
 
                 <Link href="/admin/utilisateurs" className="block">
-                  <Button className="w-full bg-primary text-white hover:bg-primary-700 h-10 rounded-lg font-semibold text-sm justify-start">
+                  <Button className="w-full bg-primary text-white hover:bg-primary-700 h-10 rounded-xl font-semibold text-sm justify-start">
                     → Gérer les utilisateurs
                   </Button>
                 </Link>
 
                 <Link href="/admin/ressources" className="block">
-                  <Button className="w-full bg-primary text-white hover:bg-primary-700 h-10 rounded-lg font-semibold text-sm justify-start">
+                  <Button className="w-full bg-primary text-white hover:bg-primary-700 h-10 rounded-xl font-semibold text-sm justify-start">
                     → Gérer les ressources
                   </Button>
                 </Link>
 
                 <Link href="/admin/moderation" className="block">
-                  <Button className="w-full bg-orange-500 text-white hover:bg-orange-600 h-10 rounded-lg font-semibold text-sm justify-start">
+                  <Button className="w-full bg-orange-500 text-white hover:bg-orange-600 h-10 rounded-xl font-semibold text-sm justify-start">
                     → Modération (3 en attente)
                   </Button>
                 </Link>
               </div>
 
               {/* System Status */}
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm space-y-3">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
                 <h3 className="font-bold text-content mb-4">État du Système</h3>
 
                 <div className="flex items-center justify-between">
@@ -193,16 +193,16 @@ export default function AdminDashboardPage() {
                   </span>
                 </div>
 
-                <div className="pt-3 border-t border-border-standard/30 mt-3">
+                <div className="pt-3 border-t border-gray-100 mt-3">
                   <p className="text-xs text-green-600 font-semibold">✓ Tous les systèmes fonctionnent normalement</p>
                 </div>
               </div>
 
               {/* Info Box */}
-              <div className="bg-blue-50 p-6 rounded-xl border border-blue-200 space-y-3">
+              <div className="bg-blue-50/70 p-6 rounded-2xl border border-blue-100 shadow-sm space-y-3">
                 <h4 className="font-bold text-blue-900 text-sm">💡 Rappel</h4>
                 <p className="text-xs text-blue-800 leading-relaxed">
-                  Visitez la documentation de modération pour comprendre nos critères d'approbation.
+                  Visitez la documentation de modération pour comprendre nos critères d&apos;approbation.
                 </p>
                 <a href="/docs" className="text-blue-600 text-xs font-semibold hover:underline inline-block">
                   Voir la documentation →

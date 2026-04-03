@@ -26,7 +26,8 @@ export default function CreerRessourcePage() {
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, files } = e.target as any;
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, files } = target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'file' ? files?.[0] : value
@@ -87,17 +88,17 @@ export default function CreerRessourcePage() {
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
       <MainHeader />
 
-      <main className="flex-grow">
+      <main className="grow">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white p-6 rounded-2xl border border-border-standard/60 shadow-sm space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
             <div>
               <h1 className="text-2xl font-bold text-content mb-1">Créer une Ressource</h1>
-              <p className="text-content-muted text-sm">Partagez votre savoir-faire avec notre communauté d'entraide</p>
+              <p className="text-content-muted text-sm">Partagez votre savoir-faire avec notre communauté d&apos;entraide</p>
             </div>
 
             {/* Success Message */}
             {successMessage && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-50 border border-green-100 rounded-2xl shadow-sm p-4">
                 <p className="text-green-800 text-sm font-medium">{successMessage}</p>
               </div>
             )}
@@ -107,7 +108,7 @@ export default function CreerRessourcePage() {
 
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-xs font-semibold text-content">
+                <Label htmlFor="title" className="text-xs font-semibold text-gray-600">
                   Titre de la ressource *
                 </Label>
                 <Input
@@ -117,14 +118,14 @@ export default function CreerRessourcePage() {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Ex: Guide pratique sur..."
-                  className="h-11 border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content"
+                  className="h-11 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 font-medium text-content"
                 />
                 {errors.title && <p className="text-red-500 text-xs">{errors.title}</p>}
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-semibold text-content">
+                <Label htmlFor="description" className="text-xs font-semibold text-gray-600">
                   Description détaillée *
                 </Label>
                 <textarea
@@ -134,7 +135,7 @@ export default function CreerRessourcePage() {
                   onChange={handleChange}
                   placeholder="Décrivez votre ressource en détail (minimum 20 caractères)..."
                   rows={5}
-                  className="w-full border border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content px-4 py-3 resize-none"
+                  className="w-full border border-gray-200 rounded-xl focus:ring-1 focus:ring-primary/20 bg-gray-50/50 font-medium text-content px-4 py-3 resize-none outline-none"
                 />
                 {errors.description && <p className="text-red-500 text-xs">{errors.description}</p>}
               </div>
@@ -142,7 +143,7 @@ export default function CreerRessourcePage() {
               {/* Category & Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-xs font-semibold text-content">
+                  <Label htmlFor="category" className="text-xs font-semibold text-gray-600">
                     Catégorie *
                   </Label>
                   <select
@@ -150,7 +151,7 @@ export default function CreerRessourcePage() {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors w-full"
+                    className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors w-full outline-none focus:ring-1 focus:ring-primary/20"
                   >
                     <option value="">Sélectionner une catégorie</option>
                     <option value="Éducation">Éducation</option>
@@ -164,7 +165,7 @@ export default function CreerRessourcePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="type" className="text-xs font-semibold text-content">
+                  <Label htmlFor="type" className="text-xs font-semibold text-gray-600">
                     Type de ressource *
                   </Label>
                   <select
@@ -172,7 +173,7 @@ export default function CreerRessourcePage() {
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
-                    className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors w-full"
+                    className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors w-full outline-none focus:ring-1 focus:ring-primary/20"
                   >
                     <option value="">Sélectionner un type</option>
                     <option value="article">Article</option>
@@ -189,7 +190,7 @@ export default function CreerRessourcePage() {
               {/* Conditional Fields */}
               {formData.type === 'file' && (
                 <div className="space-y-2">
-                  <Label htmlFor="file" className="text-xs font-semibold text-content">
+                  <Label htmlFor="file" className="text-xs font-semibold text-gray-600">
                     Télécharger le fichier *
                   </Label>
                   <input
@@ -198,7 +199,7 @@ export default function CreerRessourcePage() {
                     name="file"
                     onChange={handleChange}
                     accept=".pdf,.doc,.docx"
-                    className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 font-medium text-content px-4 py-2 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-700"
+                    className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 font-medium text-content px-4 py-2 file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-700"
                   />
                   {errors.file && <p className="text-red-500 text-xs">{errors.file}</p>}
                 </div>
@@ -206,7 +207,7 @@ export default function CreerRessourcePage() {
 
               {formData.type === 'link' && (
                 <div className="space-y-2">
-                  <Label htmlFor="url" className="text-xs font-semibold text-content">
+                  <Label htmlFor="url" className="text-xs font-semibold text-gray-600">
                     URL *
                   </Label>
                   <Input
@@ -216,7 +217,7 @@ export default function CreerRessourcePage() {
                     value={formData.url}
                     onChange={handleChange}
                     placeholder="https://..."
-                    className="h-11 border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content"
+                    className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50 font-medium text-content"
                   />
                   {errors.url && <p className="text-red-500 text-xs">{errors.url}</p>}
                 </div>
@@ -224,7 +225,7 @@ export default function CreerRessourcePage() {
 
               {(formData.type === 'video' || formData.type === 'audio') && (
                 <div className="space-y-2">
-                  <Label htmlFor="duration" className="text-xs font-semibold text-content">
+                  <Label htmlFor="duration" className="text-xs font-semibold text-gray-600">
                     Durée (optionnel)
                   </Label>
                   <Input
@@ -234,14 +235,14 @@ export default function CreerRessourcePage() {
                     value={formData.duration}
                     onChange={handleChange}
                     placeholder="Ex: 15:30 ou 2h 30min"
-                    className="h-11 border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content"
+                    className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50 font-medium text-content"
                   />
                 </div>
               )}
 
               {/* Visibility */}
-              <div className="space-y-3 p-4 bg-surface-muted/30 rounded-lg border border-border-standard/30">
-                <Label className="text-xs font-semibold text-content block">Niveau de visibilité *</Label>
+              <div className="space-y-3 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
+                <Label className="text-xs font-semibold text-gray-600 block">Niveau de visibilité *</Label>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <input
@@ -257,7 +258,7 @@ export default function CreerRessourcePage() {
                       <Label htmlFor="public" className="text-xs font-semibold text-content cursor-pointer">
                         Publique
                       </Label>
-                      <p className="text-xs text-content-muted">En attente de validation d'un modérateur avant publication</p>
+                      <p className="text-xs text-content-muted">En attente de validation d&apos;un modérateur avant publication</p>
                     </div>
                   </div>
 
@@ -300,10 +301,10 @@ export default function CreerRessourcePage() {
               </div>
 
               {/* Consent */}
-              <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-3 p-4 bg-blue-50/70 rounded-2xl border border-blue-100 shadow-sm">
                 <Checkbox id="consent" className="mt-1" />
                 <Label htmlFor="consent" className="text-xs text-blue-800 leading-relaxed cursor-pointer">
-                  Je certifie que cette ressource est originale ou que j'ai les droits nécessaires pour la partager. Elle respectera les conditions d'utilisation et ne contient pas de contenu dangereux ou offensant.
+                  Je certifie que cette ressource est originale ou que j&apos;ai les droits nécessaires pour la partager. Elle respectera les conditions d&apos;utilisation et ne contient pas de contenu dangereux ou offensant.
                 </Label>
               </div>
 
@@ -319,7 +320,7 @@ export default function CreerRessourcePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 bg-white text-content border-border-standard hover:bg-surface-muted font-semibold px-8 h-11 rounded-xl text-base transition-all shadow-sm"
+                  className="flex-1 bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-11 rounded-xl text-base transition-all shadow-sm"
                 >
                   <Link href="/catalogue" className="w-full h-full flex items-center justify-center">
                     Annuler
@@ -329,7 +330,7 @@ export default function CreerRessourcePage() {
             </form>
 
             {/* Help */}
-            <div className="text-center pt-4 border-t border-border-standard/30">
+            <div className="text-center pt-4 border-t border-gray-100">
               <p className="text-content-muted text-xs">
                 Questions ? <Link href="/faq" className="text-primary font-semibold hover:underline">Consultez notre aide</Link>
               </p>

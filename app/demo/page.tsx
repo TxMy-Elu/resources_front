@@ -83,9 +83,9 @@ export default function DemoPage() {
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
       <MainHeader />
 
-      <main className="flex-grow">
+      <main className="grow">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-white border-b border-border-standard/40 py-24 sm:py-32">
+        <section className="relative overflow-hidden bg-white border-b border-gray-100 py-24 sm:py-32">
           {/* Subtle grid background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
           <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary opacity-20 blur-[100px]" />
@@ -96,17 +96,17 @@ export default function DemoPage() {
                 Design System v4.0
               </Badge>
               <h1 className="text-5xl font-bold text-content tracking-tight sm:text-7xl mb-8 leading-[1.1]">
-                Un accès <span className="text-primary">simplifié</span> aux ressources
+                {"Un accès "} <span className="text-primary">simplifié</span> {" aux ressources"}
               </h1>
               <p className="text-lg text-content-muted leading-relaxed font-medium mb-10 max-w-2xl">
-                Une plateforme modernisée pour accompagner les familles. Explorez nos guides, vidéos et outils interactifs conformes aux standards de l'État.
+                Une plateforme modernisée pour accompagner les familles. Explorez nos guides, vidéos et outils interactifs conformes aux standards de l&apos;État.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-12 rounded-xl text-base transition-all">
                   Toutes les ressources
                 </Button>
-                <Button variant="outline" className="bg-white text-content border-border-standard hover:bg-surface-muted font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
-                  Consulter l'agenda
+                <Button variant="outline" className="bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
+                  Consulter l&apos;agenda
                 </Button>
               </div>
             </div>
@@ -120,8 +120,8 @@ export default function DemoPage() {
           <section className="space-y-8">
             <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-content tracking-tight">L'impact de la plateforme</h2>
-                <p className="text-content-subtle font-medium text-sm">Chiffres clés de l'année en cours</p>
+                <h2 className="text-2xl font-bold text-content tracking-tight">L&apos;impact de la plateforme</h2>
+                <p className="text-content-subtle font-medium text-sm">Chiffres clés de l&apos;année en cours</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -153,10 +153,10 @@ export default function DemoPage() {
           </section>
 
           {/* How it works Section */}
-          <section className="space-y-12 bg-surface-muted/30 p-10 rounded-[2.5rem] border border-border-standard/30">
+          <section className="space-y-12 bg-gray-50/70 p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
             <div className="text-center space-y-2 max-w-2xl mx-auto">
               <h2 className="text-2xl font-bold text-content tracking-tight">Comment ça marche ?</h2>
-              <p className="text-content-subtle font-medium text-sm">Un parcours simple et intuitif pour trouver l'aide dont vous avez besoin.</p>
+              <p className="text-content-subtle font-medium text-sm">Un parcours simple et intuitif pour trouver l&apos;aide dont vous avez besoin.</p>
             </div>
             <StepProcess 
               steps={[
@@ -269,27 +269,27 @@ export default function DemoPage() {
                 <h2 className="text-2xl font-bold text-content tracking-tight">Trouver une Ressource</h2>
                 <p className="text-content-subtle font-medium text-sm">Moteur de recherche avancé</p>
               </div>
-              <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-6">
+              <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
                 <div className="grid w-full items-center gap-2">
-                  <Label htmlFor="search-input" className="text-xs font-semibold text-content">Rechercher par mot-clé</Label>
-                  <Input 
+                  <Label htmlFor="search-input" className="text-xs font-semibold text-gray-600">Rechercher par mot-clé</Label>
+                  <Input
                     type="text" 
                     id="search-input" 
                     placeholder="Ex: Éducation, Parentalité, Santé..." 
-                    className="h-11 border-border-standard rounded-lg focus:ring-2 focus:ring-primary/20 bg-surface-muted/50 font-medium text-content placeholder:text-content-subtle px-4" 
+                    className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50 font-medium text-content placeholder:text-content-subtle px-4"
                   />
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid w-full items-center gap-2">
-                    <Label className="text-xs font-semibold text-content">Thématique</Label>
-                    <div className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors">
+                    <Label className="text-xs font-semibold text-gray-600">Thématique</Label>
+                    <div className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors">
                       Toutes les thématiques
                     </div>
                   </div>
                   <div className="grid w-full items-center gap-2">
-                    <Label className="text-xs font-semibold text-content">Type de média</Label>
-                    <div className="h-11 border border-border-standard rounded-lg bg-surface-muted/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-surface-muted transition-colors">
+                    <Label className="text-xs font-semibold text-gray-600">Type de média</Label>
+                    <div className="h-11 border border-gray-200 rounded-xl bg-gray-50/50 flex items-center px-4 text-content-muted font-medium text-sm cursor-pointer hover:bg-gray-100/60 transition-colors">
                       Tous les formats
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default function DemoPage() {
 }
 
 function Badge({ children, variant = "default", className = "" }: { children: React.ReactNode, variant?: string, className?: string }) {
-  const variants: any = {
+  const variants: Record<string, string> = {
     default: "bg-primary text-white",
     outline: "border border-primary text-primary bg-transparent",
     secondary: "bg-secondary text-content"

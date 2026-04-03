@@ -32,22 +32,22 @@ export default function FAQPage() {
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
       <PageHeader title="Foire Aux Questions" description="Trouvez les réponses à vos questions" showBackButton={false} />
-      <div className="max-w-3xl mx-auto px-4 py-8 flex-grow w-full">
+      <div className="max-w-3xl mx-auto px-4 py-8 grow w-full">
         <div className="mb-8">
-          <Input placeholder="Rechercher une question..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 text-base" />
+          <Input placeholder="Rechercher une question..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-11 text-base rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
         </div>
         {Object.entries(grouped).map(([cat, items]) => items.length > 0 && (
           <div key={cat} className="mb-8">
             <h2 className="text-xl font-bold text-content mb-4">{cat}</h2>
             <div className="space-y-3">
               {items.map(item => (
-                <div key={item.id} className="bg-white rounded-lg border border-border-standard/60 overflow-hidden">
-                  <button onClick={() => setOpenId(openId === item.id ? null : item.id)} className="w-full flex items-center justify-between p-4 hover:bg-surface-muted/50 transition">
+                <div key={item.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <button onClick={() => setOpenId(openId === item.id ? null : item.id)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition">
                     <span className="font-semibold text-content text-sm text-left">{item.q}</span>
                     <ChevronDown className={`w-5 h-5 text-primary transition-transform ${openId === item.id ? 'rotate-180' : ''}`} />
                   </button>
                   {openId === item.id && (
-                    <div className="border-t border-border-standard/20 p-4 bg-surface-muted/30">
+                    <div className="border-t border-gray-100 p-4 bg-gray-50/60">
                       <p className="text-content-muted text-sm">{item.a}</p>
                     </div>
                   )}

@@ -70,29 +70,29 @@ export default function MotDePasseOubliePage() {
       <MainHeader />
       <PageHeader title="Mot de Passe Oublié" description="Réinitialisez votre mot de passe" showBackButton={false} />
 
-      <main className="flex-grow">
+      <main className="grow">
         <div className="max-w-md mx-auto px-4 py-12">
-          <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
 
             {/* Step 1 : Email */}
             {step === 'email' && (
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div>
-                  <Label className="text-xs font-semibold">Adresse email</Label>
+                  <Label className="text-xs font-semibold text-gray-600">Adresse email</Label>
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre@email.com"
-                    className="h-11 text-sm mt-2"
+                    className="h-11 text-sm mt-2 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
-                  <p className="text-xs text-content-muted mt-2">Entrez l'email associé à votre compte</p>
+                  <p className="text-xs text-content-muted mt-2">Entrez l&apos;email associé à votre compte</p>
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-lg font-semibold text-base disabled:opacity-50"
+                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base disabled:opacity-50"
                 >
                   {loading ? 'Envoi en cours...' : 'Envoyer un code'}
                 </Button>
@@ -109,19 +109,19 @@ export default function MotDePasseOubliePage() {
             {step === 'code' && (
               <form onSubmit={handleCodeSubmit} className="space-y-4">
                 <div>
-                  <Label className="text-xs font-semibold">Code de vérification</Label>
+                  <Label className="text-xs font-semibold text-gray-600">Code de vérification</Label>
                   <Input
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="000000"
-                    className="h-11 text-sm mt-2 text-center tracking-widest"
+                    className="h-11 text-sm mt-2 text-center tracking-widest rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
                   <p className="text-xs text-content-muted mt-2">Un code a été envoyé à {email}</p>
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-lg font-semibold text-base"
+                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base"
                 >
                   Vérifier le code
                 </Button>
@@ -132,11 +132,11 @@ export default function MotDePasseOubliePage() {
                     onClick={() => setStep('email')}
                     className="text-sm text-primary hover:underline font-semibold"
                   >
-                    Modifier l'email
+                    Modifier l&apos;email
                   </button>
                 </div>
 
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200 text-xs text-green-800">
+                <div className="bg-green-50 p-3 rounded-xl border border-green-100 text-xs text-green-800">
                   <p className="font-semibold">Code de test : 123456</p>
                 </div>
               </form>
@@ -146,33 +146,34 @@ export default function MotDePasseOubliePage() {
             {step === 'reset' && (
               <form onSubmit={handleResetSubmit} className="space-y-4">
                 <div>
-                  <Label className="text-xs font-semibold">Nouveau mot de passe</Label>
+                  <Label className="text-xs font-semibold text-gray-600">Nouveau mot de passe</Label>
                   <Input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="h-11 text-sm mt-2"
+                    className="h-11 text-sm mt-2 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
+                  <p className="text-xs text-content-muted mt-1">Min. 8 caractères, 1 majuscule, 1 chiffre</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold">Confirmer le mot de passe</Label>
+                  <Label className="text-xs font-semibold text-gray-600">Confirmer le mot de passe</Label>
                   <Input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="h-11 text-sm mt-2"
+                    className="h-11 text-sm mt-2 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-lg font-semibold text-base disabled:opacity-50"
+                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base disabled:opacity-50"
                 >
-                  {loading ? 'Réinitialisation...' : 'Réinitialiser'}
+                  {loading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe'}
                 </Button>
               </form>
             )}
@@ -181,9 +182,8 @@ export default function MotDePasseOubliePage() {
             {step === 'success' && (
               <div className="text-center space-y-4 py-8">
                 <div className="text-5xl">✅</div>
-                <h2 className="text-2xl font-bold text-content">Succès !</h2>
-                <p className="text-content-muted">Votre mot de passe a été réinitialisé.</p>
-                <p className="text-sm text-content-muted">Redirection vers la connexion...</p>
+                <h2 className="text-2xl font-bold text-content">Mot de passe réinitialisé !</h2>
+                <p className="text-content-muted">Vous allez être redirigé vers la page de connexion.</p>
               </div>
             )}
           </div>

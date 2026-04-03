@@ -17,12 +17,12 @@ export const TestimonialCard = ({ quote, author, role, className }: TestimonialP
     )}>
       {/* Quote Icon watermark */}
       <div className="absolute top-6 left-6 text-6xl text-primary/5 font-serif leading-none select-none">
-        "
+        &quot;
       </div>
       
       <div className="relative z-10">
         <p className="text-content-muted font-medium text-base leading-relaxed mb-6 italic">
-          "{quote}"
+          &quot;{quote}&quot;
         </p>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-surface-sunken flex items-center justify-center text-primary-700 font-bold text-sm border border-white shadow-sm">

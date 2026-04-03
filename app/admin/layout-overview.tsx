@@ -88,13 +88,13 @@ export default function AdminLayoutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {adminSections.map((section, idx) => (
               <Link key={idx} href={section.href}>
-                <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all cursor-pointer h-full">
-                  <div className={`w-12 h-12 rounded-lg ${section.color} flex items-center justify-center mb-4`}>
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer h-full">
+                  <div className={`w-12 h-12 rounded-xl ${section.color} flex items-center justify-center mb-4`}>
                     {section.icon}
                   </div>
                   <h3 className="text-lg font-bold text-content mb-2">{section.title}</h3>
                   <p className="text-content-muted text-sm">{section.description}</p>
-                  <div className="mt-4 pt-4 border-t border-border-standard/20">
+                  <div className="mt-4 pt-4 border-t border-gray-100">
                     <span className="text-primary text-sm font-semibold">Accéder →</span>
                   </div>
                 </div>
@@ -108,9 +108,9 @@ export default function AdminLayoutPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {additionalSettings.map((setting, idx) => (
                 <a key={idx} href={setting.href} className="block">
-                  <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm hover:shadow-md transition-all">
+                  <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
                     <div className="flex items-start gap-4">
-                      <div className="p-3 bg-surface-muted rounded-lg text-primary">
+                      <div className="p-3 bg-gray-50 rounded-xl text-primary">
                         {setting.icon}
                       </div>
                       <div>
@@ -128,7 +128,7 @@ export default function AdminLayoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Documentation */}
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl border border-blue-200">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl border border-blue-100 shadow-sm">
               <h3 className="text-lg font-bold text-blue-900 mb-3">📚 Documentation</h3>
               <p className="text-blue-800 text-sm mb-4">
                 Consultez la documentation complète pour comprendre les règles de modération et les meilleures pratiques.
@@ -139,10 +139,10 @@ export default function AdminLayoutPage() {
             </div>
 
             {/* Support */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl border border-purple-200">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl border border-purple-100 shadow-sm">
               <h3 className="text-lg font-bold text-purple-900 mb-3">🆘 Support</h3>
               <p className="text-purple-800 text-sm mb-4">
-                Besoin d'aide ? Contactez l'équipe support ou consultez la FAQ interne.
+                Besoin d&apos;aide ? Contactez l&apos;équipe support ou consultez la FAQ interne.
               </p>
               <a href="/admin/support" className="text-purple-600 font-semibold text-sm hover:underline inline-block">
                 Contacter le support →
@@ -151,25 +151,25 @@ export default function AdminLayoutPage() {
           </div>
 
           {/* Info Box */}
-          <div className="mt-12 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+          <div className="mt-12 bg-yellow-50 border border-yellow-100 rounded-2xl shadow-sm p-6">
             <h3 className="text-sm font-bold text-yellow-900 mb-2">⚠️ Important</h3>
             <p className="text-yellow-800 text-sm">
-              Vous êtes connecté en tant qu'administrateur. Tous vos actions sont enregistrées pour la traçabilité et la sécurité.
+              Vous êtes connecté en tant qu&apos;administrateur. Tous vos actions sont enregistrées pour la traçabilité et la sécurité.
             </p>
           </div>
 
           {/* Bottom Navigation */}
-          <div className="mt-12 pt-8 border-t border-border-standard/30">
+          <div className="mt-12 pt-8 border-t border-gray-100">
             <div className="flex flex-wrap gap-4 justify-between items-center">
               <div className="text-content-muted text-xs">
                 <p>Version 1.0 | © 2026 (RE)SOURCES</p>
               </div>
               <div className="flex gap-4">
-                <a href="/" className="text-primary text-sm font-semibold hover:underline">
+                <Link href="/" className="text-primary text-sm font-semibold hover:underline">
                   Voir le site public
-                </a>
+                </Link>
                 <a href="/conditions" className="text-primary text-sm font-semibold hover:underline">
-                  Conditions d'utilisation
+                  Conditions d&apos;utilisation
                 </a>
                 <a href="/contact" className="text-primary text-sm font-semibold hover:underline">
                   Nous contacter

@@ -63,25 +63,25 @@ export default function DashboardPage() {
       <MainHeader />
       <PageHeader title="Mon Tableau de Bord" description="Gérez vos ressources et favoris" showBackButton={false} />
 
-      <main className="flex-grow">
+      <main className="grow">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="space-y-12">
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm text-center">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
                 <p className="text-3xl font-bold text-primary">3</p>
                 <p className="text-content-muted text-sm mt-2">Ressources créées</p>
               </div>
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm text-center">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
                 <p className="text-3xl font-bold text-primary">2</p>
                 <p className="text-content-muted text-sm mt-2">Ressources enregistrées</p>
               </div>
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm text-center">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
                 <p className="text-3xl font-bold text-primary">546</p>
                 <p className="text-content-muted text-sm mt-2">Vues totales</p>
               </div>
-              <div className="bg-white p-6 rounded-xl border border-border-standard/60 shadow-sm text-center">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
                 <p className="text-3xl font-bold text-primary">102</p>
                 <p className="text-content-muted text-sm mt-2">Sauvegarde totales</p>
               </div>
@@ -96,51 +96,51 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              <div className="bg-white rounded-lg border border-border-standard/60 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50/80 border-b border-gray-100">
                     <tr>
-                      <th className="px-6 py-3 text-left font-semibold text-xs">Titre</th>
-                      <th className="px-6 py-3 text-left font-semibold text-xs">Statut</th>
-                      <th className="px-6 py-3 text-center font-semibold text-xs">Vues</th>
-                      <th className="px-6 py-3 text-center font-semibold text-xs">Enregistrées</th>
-                      <th className="px-6 py-3 text-right font-semibold text-xs">Actions</th>
+                      <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Titre</th>
+                      <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Statut</th>
+                      <th className="px-6 py-4 text-center font-semibold text-xs text-gray-500 uppercase tracking-wider">Vues</th>
+                      <th className="px-6 py-4 text-center font-semibold text-xs text-gray-500 uppercase tracking-wider">Enregistrées</th>
+                      <th className="px-6 py-4 text-right font-semibold text-xs text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-50">
                     {resources.map(r => (
-                      <tr key={r.id} className="border-t hover:bg-surface-muted/30 transition-colors">
-                        <td className="px-6 py-3">
+                      <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4">
                           <div>
                             <p className="font-semibold text-content">{r.title}</p>
                             <p className="text-xs text-content-muted">{r.category} • {r.type}</p>
                           </div>
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="px-6 py-4">
                           <span className={`px-2 py-1 rounded text-xs font-semibold ${
                             r.status === 'Publié' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                           }`}>
                             {r.status}
                           </span>
                         </td>
-                        <td className="px-6 py-3 text-center">
+                        <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <Eye className="w-4 h-4 text-primary" />
                             {r.views}
                           </div>
                         </td>
-                        <td className="px-6 py-3 text-center">
+                        <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <Heart className="w-4 h-4 text-red-500" />
                             {r.saved}
                           </div>
                         </td>
-                        <td className="px-6 py-3 text-right">
+                        <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
-                            <Link href={`/ressource/${r.id}/editer`} className="p-2 hover:bg-surface-muted rounded text-primary" title="Éditer">
+                            <Link href={`/ressource/${r.id}/editer`} className="p-2 hover:bg-gray-100 rounded-lg text-primary transition-colors" title="Éditer">
                               <Edit2 className="w-4 h-4" />
                             </Link>
-                            <button className="p-2 hover:bg-surface-muted rounded text-red-600" title="Supprimer">
+                            <button className="p-2 hover:bg-red-50 rounded-lg text-red-600 transition-colors" title="Supprimer">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {savedResources.map(r => (
-                  <div key={r.id} className="bg-white p-4 rounded-lg border border-border-standard/60 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={r.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <h3 className="font-semibold text-content">{r.title}</h3>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
                         <Heart className="w-5 h-5 fill-current" />
                       </button>
                     </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-border-standard/30">
+                    <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                       <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{r.category}</span>
                       <span className="text-xs text-content-muted">{r.savedDate}</span>
                     </div>

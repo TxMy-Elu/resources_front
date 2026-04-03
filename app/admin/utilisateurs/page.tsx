@@ -33,11 +33,16 @@ export default function AdminUsersPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    role: 'Citoyen' | 'Modérateur' | 'Administrateur' | 'Super-administrateur';
+    status: 'Actif' | 'Inactif';
+  }>({
     name: '',
     email: '',
-    role: 'Citoyen' as const,
-    status: 'Actif' as const
+    role: 'Citoyen',
+    status: 'Actif'
   });
 
   const filteredUsers = users.filter(user => {
@@ -122,18 +127,18 @@ export default function AdminUsersPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
         {/* Filters */}
-        <div className="bg-white p-4 rounded-lg border border-border-standard/60 shadow-sm mb-6 space-y-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mb-6 space-y-4">
           <div className="flex gap-4 flex-wrap">
             <div className="flex-1 min-w-[200px]">
-              <Label htmlFor="search" className="text-xs font-semibold">Rechercher</Label>
+                <Label htmlFor="search" className="text-xs font-semibold text-gray-600">Rechercher</Label>
               <div className="relative mt-1">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-content-muted" />
-                <Input id="search" placeholder="Nom ou email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 h-9 text-sm" />
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <Input id="search" placeholder="Nom ou email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 h-10 text-sm rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
             </div>
             <div className="min-w-[150px]">
-              <Label htmlFor="role" className="text-xs font-semibold">Rôle</Label>
-              <select id="role" value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="w-full h-9 rounded-lg border border-border-standard text-sm px-3 mt-1">
+                <Label htmlFor="role" className="text-xs font-semibold text-gray-600">Rôle</Label>
+                <select id="role" value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                 <option value="all">Tous</option>
                 <option value="Citoyen">Citoyen</option>
                 <option value="Modérateur">Modérateur</option>
@@ -142,8 +147,8 @@ export default function AdminUsersPage() {
               </select>
             </div>
             <div className="min-w-[150px]">
-              <Label htmlFor="status" className="text-xs font-semibold">Statut</Label>
-              <select id="status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full h-9 rounded-lg border border-border-standard text-sm px-3 mt-1">
+                <Label htmlFor="status" className="text-xs font-semibold text-gray-600">Statut</Label>
+                <select id="status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                 <option value="all">Tous</option>
                 <option value="Actif">Actif</option>
                 <option value="Inactif">Inactif</option>
@@ -153,24 +158,24 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg border border-border-standard/60 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-surface-muted border-b border-border-standard/30">
+              <thead className="bg-gray-50/80 border-b border-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Nom</th>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Email</th>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Rôle</th>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Statut</th>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Inscrit</th>
-                  <th className="px-6 py-3 text-left font-semibold text-xs">Ressources</th>
-                  <th className="px-6 py-3 text-right font-semibold text-xs">Actions</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Nom</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Rôle</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Statut</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Inscrit</th>
+                  <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Ressources</th>
+                  <th className="px-6 py-4 text-right font-semibold text-xs text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-50">
                 {filteredUsers.map(user => (
-                  <tr key={user.id} className="border-b border-border-standard/20 hover:bg-surface-muted/50 transition-colors">
-                    <td className="px-6 py-3 font-medium">{user.name}</td>
+                  <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-800">{user.name}</td>
                     <td className="px-6 py-3 text-content-muted text-xs">{user.email}</td>
                     <td className="px-6 py-3"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>{user.role}</span></td>
                     <td className="px-6 py-3"><span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'Actif' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{user.status}</span></td>
@@ -178,11 +183,11 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-3 text-center">{user.resourceCount}</td>
                     <td className="px-6 py-3">
                       <div className="flex justify-end gap-2">
-                        <Button onClick={() => openEditModal(user)} size="sm" variant="outline" className="h-7 px-2 rounded-md">
-                          <Edit className="w-3 h-3" />
+                        <Button onClick={() => openEditModal(user)} size="sm" variant="outline" className="h-8 px-2.5 border-gray-200 hover:bg-gray-50 hover:text-primary transition-colors rounded-lg">
+                          <Edit className="w-3.5 h-3.5" />
                         </Button>
-                        <Button onClick={() => setDeleteConfirmId(user.id)} size="sm" className="h-7 px-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 border-0">
-                          <Trash2 className="w-3 h-3" />
+                        <Button onClick={() => setDeleteConfirmId(user.id)} size="sm" variant="outline" className="h-8 px-2.5 border-red-100 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors rounded-lg">
+                          <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </div>
                     </td>
@@ -200,15 +205,15 @@ export default function AdminUsersPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mt-8">
-          <div className="bg-white p-4 rounded-lg border border-border-standard/60 shadow-sm text-center">
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-2xl font-bold text-primary">{users.length}</p>
             <p className="text-content-muted text-xs mt-1">Total utilisateurs</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-border-standard/60 shadow-sm text-center">
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-2xl font-bold text-green-600">{users.filter(u => u.status === 'Actif').length}</p>
             <p className="text-content-muted text-xs mt-1">Actifs</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-border-standard/60 shadow-sm text-center">
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
             <p className="text-2xl font-bold text-blue-600">{users.filter(u => ['Modérateur', 'Administrateur', 'Super-administrateur'].includes(u.role)).length}</p>
             <p className="text-content-muted text-xs mt-1">Modérateurs+</p>
           </div>
@@ -218,23 +223,23 @@ export default function AdminUsersPage() {
       {/* Add/Edit Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="border-b border-border-standard/30 p-4 flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-md w-full overflow-hidden">
+            <div className="border-b border-gray-100 p-5 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-lg font-bold text-content">{editingUser ? 'Éditer utilisateur' : 'Ajouter utilisateur'}</h2>
-              <button onClick={closeModal} className="p-1 hover:bg-surface-muted rounded"><X className="w-5 h-5" /></button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 transition-colors"><X className="w-5 h-5" /></button>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="p-5 space-y-5">
               <div>
-                <Label className="text-xs font-semibold">Nom</Label>
-                <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom complet" className="h-9 text-sm mt-1" />
+                <Label className="text-xs font-semibold text-gray-600">Nom</Label>
+                <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom complet" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
               <div>
-                <Label className="text-xs font-semibold">Email</Label>
-                <Input value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="email@example.com" type="email" className="h-9 text-sm mt-1" />
+                <Label className="text-xs font-semibold text-gray-600">Email</Label>
+                <Input value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="email@example.com" type="email" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
               <div>
-                <Label className="text-xs font-semibold">Rôle</Label>
-                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as User['role'] })} className="w-full h-9 rounded-lg border border-border-standard text-sm px-3 mt-1">
+                <Label className="text-xs font-semibold text-gray-600">Rôle</Label>
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as User['role'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                   <option value="Citoyen">Citoyen</option>
                   <option value="Modérateur">Modérateur</option>
                   <option value="Administrateur">Administrateur</option>
@@ -242,15 +247,15 @@ export default function AdminUsersPage() {
                 </select>
               </div>
               <div>
-                <Label className="text-xs font-semibold">Statut</Label>
-                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as User['status'] })} className="w-full h-9 rounded-lg border border-border-standard text-sm px-3 mt-1">
+                <Label className="text-xs font-semibold text-gray-600">Statut</Label>
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as User['status'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                   <option value="Actif">Actif</option>
                   <option value="Inactif">Inactif</option>
                 </select>
               </div>
-              <div className="flex gap-3 pt-4 border-t border-border-standard/30">
-                <Button onClick={closeModal} variant="outline" className="flex-1 bg-white text-content border-border-standard h-9 rounded-lg text-sm">Annuler</Button>
-                <Button onClick={handleSave} className="flex-1 bg-primary text-white h-9 rounded-lg text-sm">{editingUser ? 'Modifier' : 'Créer'}</Button>
+              <div className="flex gap-3 pt-5 border-t border-gray-100">
+                <Button onClick={closeModal} variant="outline" className="flex-1 h-10 rounded-xl border-gray-200 hover:bg-gray-50">Annuler</Button>
+                <Button onClick={handleSave} className="flex-1 bg-primary hover:bg-primary-700 text-white h-10 rounded-xl transition-colors">{editingUser ? 'Modifier' : 'Créer'}</Button>
               </div>
             </div>
           </div>
@@ -260,13 +265,13 @@ export default function AdminUsersPage() {
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-sm w-full">
             <div className="p-6 space-y-4">
               <h2 className="text-lg font-bold text-content">Confirmer la suppression</h2>
-              <p className="text-content-muted text-sm">Cette action supprimera définitivement le compte et respectera le droit à l'oubli (RGPD).</p>
+              <p className="text-content-muted text-sm">Cette action supprimera définitivement le compte et respectera le droit à l&apos;oubli (RGPD).</p>
               <div className="flex gap-3 pt-4">
-                <Button onClick={() => setDeleteConfirmId(null)} variant="outline" className="flex-1 bg-white text-content border-border-standard h-9 rounded-lg text-sm">Annuler</Button>
-                <Button onClick={() => handleDelete(deleteConfirmId)} className="flex-1 bg-red-600 text-white h-9 rounded-lg text-sm">Supprimer</Button>
+                <Button onClick={() => setDeleteConfirmId(null)} variant="outline" className="flex-1 h-10 rounded-xl border-gray-200 hover:bg-gray-50">Annuler</Button>
+                <Button onClick={() => handleDelete(deleteConfirmId)} className="flex-1 bg-red-600 hover:bg-red-700 text-white h-10 rounded-xl transition-colors">Supprimer</Button>
               </div>
             </div>
           </div>

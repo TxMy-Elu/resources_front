@@ -14,9 +14,9 @@ export default function Home() {
         <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
             <MainHeader />
 
-            <main className="flex-grow">
+            <main className="grow">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden bg-white border-b border-border-standard/40 py-24 sm:py-32">
+                <section className="relative overflow-hidden bg-white border-b border-gray-100 py-24 sm:py-32">
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
                     <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary opacity-20 blur-[100px]" />
 
@@ -37,7 +37,7 @@ export default function Home() {
                                         Découvrir le catalogue
                                     </Link>
                                 </Button>
-                                <Button variant="outline" className="bg-white text-content border-border-standard hover:bg-surface-muted font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
+                                <Button variant="outline" className="bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
                                     <Link href="/faq" className="w-full h-full flex items-center justify-center">
                                         FAQ et Aide
                                     </Link>
@@ -54,7 +54,7 @@ export default function Home() {
                     <section className="space-y-8">
                         <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
                             <div className="space-y-1">
-                                <h2 className="text-2xl font-bold text-content tracking-tight">L'impact de la plateforme</h2>
+                                <h2 className="text-2xl font-bold text-content tracking-tight">L&apos;impact de la plateforme</h2>
                                 <p className="text-content-subtle font-medium text-sm">Chiffres clés de nos actions</p>
                             </div>
                         </div>
@@ -87,10 +87,10 @@ export default function Home() {
                     </section>
 
                     {/* How it works Section */}
-                    <section className="space-y-12 bg-surface-muted/30 p-10 rounded-[2.5rem] border border-border-standard/30">
+                    <section className="space-y-12 bg-gray-50/70 p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
                         <div className="text-center space-y-2 max-w-2xl mx-auto">
                             <h2 className="text-2xl font-bold text-content tracking-tight">Comment ça marche ?</h2>
-                            <p className="text-content-subtle font-medium text-sm">Un parcours simple et intuitif pour trouver l'aide dont vous avez besoin.</p>
+                            <p className="text-content-subtle font-medium text-sm">Un parcours simple et intuitif pour trouver l&apos;aide dont vous avez besoin.</p>
                         </div>
                         <StepProcess
                             steps={[
@@ -111,10 +111,10 @@ export default function Home() {
                             <div className="flex flex-col sm:flex-row justify-center gap-4">
                                 <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-12 rounded-xl text-base transition-all">
                                     <Link href="/inscription" className="w-full h-full flex items-center justify-center">
-                                        S'inscrire
+                                        S&apos;inscrire
                                     </Link>
                                 </Button>
-                                <Button variant="outline" className="bg-white text-content border-border-standard hover:bg-surface-muted font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
+                                <Button variant="outline" className="bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-12 rounded-xl text-base transition-all shadow-sm">
                                     <Link href="/connexion" className="w-full h-full flex items-center justify-center">
                                         Se connecter
                                     </Link>
@@ -131,12 +131,12 @@ export default function Home() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <TestimonialCard
-                                quote="Les vidéos sur la communication bienveillante m'ont beaucoup aidée avec mes ados. C'est clair et très facile à appliquer au quotidien."
+                                quote="Les vidéos sur la communication bienveillante m&apos;ont beaucoup aidée avec mes ados. C&apos;est clair et très facile à appliquer au quotidien."
                                 author="Sophie Martin"
                                 role="Mère de 2 enfants"
                             />
                             <TestimonialCard
-                                quote="J'ai enfin pu comprendre à quelles aides j'avais droit grâce aux guides PDF. Le moteur de recherche est vraiment très bien fait."
+                                quote="J&apos;ai enfin pu comprendre à quelles aides j&apos;avais droit grâce aux guides PDF. Le moteur de recherche est vraiment très bien fait."
                                 author="Thomas Dubois"
                                 role="Père au foyer"
                             />
@@ -149,25 +149,25 @@ export default function Home() {
                     </section>
 
                     {/* Help Section */}
-                    <section className="space-y-8 pt-8 border-t border-border-standard/30">
+                    <section className="space-y-8 pt-8 border-t border-gray-100">
                         <div className="text-center space-y-2">
-                            <h2 className="text-2xl font-bold text-content tracking-tight">Besoin d'aide ?</h2>
+                            <h2 className="text-2xl font-bold text-content tracking-tight">Besoin d&apos;aide ?</h2>
                             <p className="text-content-subtle font-medium text-sm">Nous sommes là pour vous accompagner</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-4 text-center">
+                            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4 text-center">
                                 <HelpCircle className="w-8 h-8 text-primary mx-auto" />
                                 <h3 className="font-bold text-content">FAQ</h3>
                                 <p className="text-content-muted text-sm">Consultez notre foire aux questions pour trouver des réponses rapides.</p>
                                 <Link href="/faq" className="text-primary font-semibold text-sm hover:underline">Voir la FAQ →</Link>
                             </div>
-                            <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-4 text-center">
+                            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4 text-center">
                                 <MessageCircle className="w-8 h-8 text-primary mx-auto" />
                                 <h3 className="font-bold text-content">Accessibilité</h3>
-                                <p className="text-content-muted text-sm">Signalez un problème d'accessibilité via notre formulaire dédié.</p>
+                                <p className="text-content-muted text-sm">Signalez un problème d&apos;accessibilité via notre formulaire dédié.</p>
                                 <Link href="/accessibilite" className="text-primary font-semibold text-sm hover:underline">Signaler un problème →</Link>
                             </div>
-                            <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-4 text-center">
+                            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4 text-center">
                                 <BookOpen className="w-8 h-8 text-primary mx-auto" />
                                 <h3 className="font-bold text-content">Contact</h3>
                                 <p className="text-content-muted text-sm">Envoyez-nous vos questions et suggestions directement.</p>
@@ -184,7 +184,7 @@ export default function Home() {
 }
 
 function Badge({ children, variant = "default", className = "" }: { children: React.ReactNode, variant?: string, className?: string }) {
-    const variants: any = {
+    const variants: Record<string, string> = {
         default: "bg-primary text-white",
         outline: "border border-primary text-primary bg-transparent",
         secondary: "bg-secondary text-content"

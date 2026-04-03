@@ -25,7 +25,8 @@ export default function InscriptionPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target as any;
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked } = target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -62,9 +63,9 @@ export default function InscriptionPage() {
       <MainHeader />
       <PageHeader title="Créer un Compte" description="Rejoignez notre communauté (RE)SOURCES" showBackButton={false} />
 
-      <main className="flex-grow">
+      <main className="grow">
         <div className="max-w-md mx-auto px-4 py-12">
-          <div className="bg-white p-8 rounded-2xl border border-border-standard/60 shadow-sm space-y-6">
+          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
 
             {submitted ? (
               <div className="text-center space-y-4 py-8">
@@ -77,23 +78,23 @@ export default function InscriptionPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs font-semibold">Prénom *</Label>
-                    <Input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Jean" className="h-10 text-sm mt-1" />
+                    <Label className="text-xs font-semibold text-gray-600">Prénom *</Label>
+                    <Input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Jean" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold">Nom *</Label>
-                    <Input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Dupont" className="h-10 text-sm mt-1" />
+                    <Label className="text-xs font-semibold text-gray-600">Nom *</Label>
+                    <Input name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Dupont" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold">Email *</Label>
-                  <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="jean@example.com" className="h-10 text-sm mt-1" />
+                  <Label className="text-xs font-semibold text-gray-600">Email *</Label>
+                  <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="jean@example.com" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold">Rôle</Label>
-                  <select name="role" value={formData.role} onChange={handleChange} className="w-full h-10 border border-border-standard rounded-lg px-3 text-sm mt-1">
+                  <Label className="text-xs font-semibold text-gray-600">Rôle</Label>
+                  <select name="role" value={formData.role} onChange={handleChange} className="w-full h-10 border border-gray-200 rounded-xl bg-gray-50/50 px-3 text-sm mt-1.5 outline-none focus:ring-1 focus:ring-primary/20">
                     <option value="parent">Parent</option>
                     <option value="educateur">Éducateur</option>
                     <option value="professionnel">Professionnel</option>
@@ -101,25 +102,25 @@ export default function InscriptionPage() {
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold">Mot de passe *</Label>
-                  <Input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" className="h-10 text-sm mt-1" />
+                  <Label className="text-xs font-semibold text-gray-600">Mot de passe *</Label>
+                  <Input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
                   <p className="text-xs text-content-muted mt-1">Min. 8 caractères, 1 majuscule, 1 chiffre</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs font-semibold">Confirmer le mot de passe *</Label>
-                  <Input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" className="h-10 text-sm mt-1" />
+                  <Label className="text-xs font-semibold text-gray-600">Confirmer le mot de passe *</Label>
+                  <Input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20" />
                 </div>
 
-                <div className="space-y-2 pt-4 border-t border-border-standard/30">
+                <div className="space-y-2 pt-4 border-t border-gray-100">
                   <div className="flex items-start gap-3">
                     <Checkbox
                       id="acceptTerms"
                       checked={formData.acceptTerms}
-                      onChange={(checked) => setFormData(prev => ({ ...prev, acceptTerms: checked }))}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, acceptTerms: checked as boolean }))}
                     />
                     <label htmlFor="acceptTerms" className="text-xs text-content-muted cursor-pointer leading-relaxed">
-                      J'accepte les <Link href="/conditions" className="text-primary hover:underline">conditions d'utilisation</Link>
+                      J&apos;accepte les <Link href="/conditions" className="text-primary hover:underline">conditions d&apos;utilisation</Link>
                     </label>
                   </div>
 
@@ -127,16 +128,16 @@ export default function InscriptionPage() {
                     <Checkbox
                       id="acceptRGPD"
                       checked={formData.acceptRGPD}
-                      onChange={(checked) => setFormData(prev => ({ ...prev, acceptRGPD: checked }))}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, acceptRGPD: checked as boolean }))}
                     />
                     <label htmlFor="acceptRGPD" className="text-xs text-content-muted cursor-pointer leading-relaxed">
-                      J'accepte la <Link href="/politique-confidentialite" className="text-primary hover:underline">politique de confidentialité</Link> et le traitement de mes données (RGPD)
+                      J&apos;accepte la <Link href="/politique-confidentialite" className="text-primary hover:underline">politique de confidentialité</Link> et le traitement de mes données (RGPD)
                     </label>
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-lg font-semibold text-base mt-6">
-                  S'inscrire
+                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base mt-6">
+                  S&apos;inscrire
                 </Button>
 
                 <div className="text-center">
@@ -145,9 +146,9 @@ export default function InscriptionPage() {
               </form>
             )}
 
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 text-xs text-blue-800">
+            <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 shadow-sm text-xs text-blue-800">
               <p className="font-semibold mb-1">Vérification email</p>
-              <p>Un email de vérification sera envoyé après l'inscription. Cliquez sur le lien pour confirmer votre compte.</p>
+              <p>Un email de vérification sera envoyé après l&apos;inscription. Cliquez sur le lien pour confirmer votre compte.</p>
             </div>
           </div>
         </div>

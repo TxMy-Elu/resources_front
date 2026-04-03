@@ -13,7 +13,7 @@ export const FilterBar = () => {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-subtle" />
         <Input 
           placeholder="Rechercher une ressource (ex: Parentalité, École...)" 
-          className="pl-10 h-11 border-none bg-surface-muted/50 focus-visible:ring-1 focus-visible:ring-primary/20 text-sm font-medium"
+          className="pl-10 h-11 border-none bg-surface-muted/50 text-sm font-medium focus-visible:outline-none"
         />
       </div>
       

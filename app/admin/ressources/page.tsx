@@ -88,18 +88,18 @@ export default function AdminResourcesPage() {
         }
       />
       <div className="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-        <div className="bg-white p-4 rounded-lg border mb-6 space-y-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mb-6 space-y-4">
           <div className="flex gap-4 flex-wrap">
             <div className="flex-1 min-w-[200px]">
-              <Label className="text-xs font-semibold">Rechercher</Label>
-              <div className="relative mt-1">
-                <Search className="absolute left-3 top-2.5 w-4 h-4" />
-                <Input placeholder="Titre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 h-9 text-sm" />
+              <Label className="text-xs font-semibold text-gray-600">Rechercher</Label>
+              <div className="relative mt-1.5">
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <Input placeholder="Titre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 h-10 text-sm rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
             </div>
             <div className="min-w-[130px]">
-              <Label className="text-xs font-semibold">Statut</Label>
-              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full h-9 rounded-lg border text-sm px-3 mt-1">
+              <Label className="text-xs font-semibold text-gray-600">Statut</Label>
+              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                 <option value="all">Tous</option>
                 <option value="Publié">Publié</option>
                 <option value="En attente">Attente</option>
@@ -107,8 +107,8 @@ export default function AdminResourcesPage() {
               </select>
             </div>
             <div className="min-w-[130px]">
-              <Label className="text-xs font-semibold">Catégorie</Label>
-              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full h-9 rounded-lg border text-sm px-3 mt-1">
+              <Label className="text-xs font-semibold text-gray-600">Catégorie</Label>
+              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                 <option value="all">Tous</option>
                 <option value="Administratif">Admin</option>
                 <option value="Bien-être">Bien-être</option>
@@ -117,33 +117,33 @@ export default function AdminResourcesPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50/80 border-b border-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left font-semibold text-xs">Titre</th>
-                <th className="px-6 py-3 text-left font-semibold text-xs">Auteur</th>
-                <th className="px-6 py-3 text-left font-semibold text-xs">Catégorie</th>
-                <th className="px-6 py-3 text-left font-semibold text-xs">Statut</th>
-                <th className="px-6 py-3 text-right font-semibold text-xs">Actions</th>
+                <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Titre</th>
+                <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Auteur</th>
+                <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Catégorie</th>
+                <th className="px-6 py-4 text-left font-semibold text-xs text-gray-500 uppercase tracking-wider">Statut</th>
+                <th className="px-6 py-4 text-right font-semibold text-xs text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-50">
               {filtered.map(r => (
-                <tr key={r.id} className="border-t">
-                  <td className="px-6 py-3 text-sm">{r.title}</td>
-                  <td className="px-6 py-3 text-xs text-gray-600">{r.author}</td>
-                  <td className="px-6 py-3 text-xs">{r.category}</td>
-                  <td className="px-6 py-3">
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                      r.status === 'Publié' ? 'bg-green-100 text-green-700' : 
-                      r.status === 'En attente' ? 'bg-yellow-100 text-yellow-700' : 
-                      'bg-red-100 text-red-700'
+                <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-800">{r.title}</td>
+                  <td className="px-6 py-4 text-xs text-gray-500">{r.author}</td>
+                  <td className="px-6 py-4 text-xs text-gray-600">{r.category}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                      r.status === 'Publié' ? 'bg-green-50 text-green-700 border-green-100' : 
+                      r.status === 'En attente' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 
+                      'bg-red-50 text-red-700 border-red-100'
                     }`}>
                       {r.status}
                     </span>
                   </td>
-                  <td className="px-6 py-3 text-right">
+                  <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <Button
                         onClick={() => {
@@ -153,16 +153,17 @@ export default function AdminResourcesPage() {
                         }}
                         size="sm"
                         variant="outline"
-                        className="h-7 px-2"
+                        className="h-8 px-2.5 border-gray-200 hover:bg-gray-50 hover:text-primary transition-colors rounded-lg"
                       >
-                        <Edit className="w-3 h-3" />
+                        <Edit className="w-3.5 h-3.5" />
                       </Button>
                       <Button
                         onClick={() => setDeleteId(r.id)}
                         size="sm"
-                        className="h-7 px-2 bg-red-100 text-red-600 border-0"
+                        variant="outline"
+                        className="h-8 px-2.5 border-red-100 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors rounded-lg"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
                   </td>
@@ -175,33 +176,33 @@ export default function AdminResourcesPage() {
 
       {modal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-md w-full">
-            <div className="border-b p-4 flex justify-between">
-              <h2 className="text-lg font-bold">{edit ? 'Éditer' : 'Ajouter'}</h2>
-              <button onClick={() => setModal(false)}>
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-md w-full overflow-hidden">
+            <div className="border-b border-gray-100 p-5 flex justify-between items-center bg-gray-50/50">
+              <h2 className="text-lg font-bold text-gray-800">{edit ? 'Éditer' : 'Ajouter'}</h2>
+              <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="p-5 space-y-5">
               <div>
-                <Label className="text-xs">Titre</Label>
-                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="h-9 text-sm mt-1" />
+                <Label className="text-xs font-semibold text-gray-600">Titre</Label>
+                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
               <div>
-                <Label className="text-xs">Auteur</Label>
-                <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} className="h-9 text-sm mt-1" />
+                <Label className="text-xs font-semibold text-gray-600">Auteur</Label>
+                <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} className="h-10 text-sm mt-1.5 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20 transition-all" />
               </div>
               <div>
-                <Label className="text-xs">Statut</Label>
-                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Res['status'] })} className="w-full h-9 rounded border text-sm px-3 mt-1">
+                <Label className="text-xs font-semibold text-gray-600">Statut</Label>
+                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Res['status'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                   <option value="Publié">Publié</option>
                   <option value="En attente">En attente</option>
                   <option value="Suspendu">Suspendu</option>
                 </select>
               </div>
-              <div className="flex gap-3 pt-4 border-t">
-                <Button onClick={() => setModal(false)} variant="outline" className="flex-1 h-9">Annuler</Button>
-                <Button onClick={save} className="flex-1 bg-primary text-white h-9">Créer</Button>
+              <div className="flex gap-3 pt-5 border-t border-gray-100">
+                <Button onClick={() => setModal(false)} variant="outline" className="flex-1 h-10 rounded-xl border-gray-200 hover:bg-gray-50">Annuler</Button>
+                <Button onClick={save} className="flex-1 bg-primary hover:bg-primary-700 text-white h-10 rounded-xl transition-colors">{edit ? 'Enregistrer' : 'Créer'}</Button>
               </div>
             </div>
           </div>
@@ -210,11 +211,11 @@ export default function AdminResourcesPage() {
 
       {deleteId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-6">
-            <h2 className="text-lg font-bold mb-4">Confirmer</h2>
-            <p className="text-sm text-gray-600 mb-4">Supprimer cette ressource ?</p>
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-sm w-full p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Confirmer</h2>
+            <p className="text-sm text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer cette ressource ? Cette action est irréversible.</p>
             <div className="flex gap-3">
-              <Button onClick={() => setDeleteId(null)} variant="outline" className="flex-1 h-9">Annuler</Button>
+              <Button onClick={() => setDeleteId(null)} variant="outline" className="flex-1 h-10 rounded-xl border-gray-200 hover:bg-gray-50">Annuler</Button>
               <Button
                 onClick={() => {
                   const r = resources.find(x => x.id === deleteId);
@@ -222,7 +223,7 @@ export default function AdminResourcesPage() {
                   alert(`❌ "${r?.title}" supprimée`);
                   setDeleteId(null);
                 }}
-                className="flex-1 bg-red-600 text-white h-9"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white h-10 rounded-xl transition-colors"
               >
                 Supprimer
               </Button>

@@ -18,15 +18,15 @@ export default function Error({
         {/* Error Visual */}
         <div className="space-y-4">
           <div className="text-6xl">⚠️</div>
-          <h1 className="text-3xl font-bold text-content">Oups ! Une erreur est survenue</h1>
+          <h1 className="text-3xl font-bold text-content">Oups&apos; ! Une erreur est survenue</h1>
           <p className="text-content-muted">
-            Quelque chose s'est mal passé. Veuillez réessayer.
+            Quelque chose s&apos;est mal passé. Veuillez réessayer.
           </p>
         </div>
 
         {/* Error Details */}
         {error.message && (
-          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+          <div className="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm">
             <p className="text-sm text-red-800 font-mono">{error.message}</p>
           </div>
         )}
@@ -35,7 +35,7 @@ export default function Error({
         <div className="flex flex-col gap-3 pt-4">
           <Button
             onClick={reset}
-            className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-lg font-semibold"
+            className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold"
           >
             Réessayer
           </Button>
@@ -43,15 +43,15 @@ export default function Error({
           <Link href="/" className="w-full">
             <Button
               variant="outline"
-              className="w-full bg-white text-content border-border-standard hover:bg-surface-muted h-11 rounded-lg font-semibold"
+              className="w-full bg-white text-content border-gray-200 hover:bg-gray-50 h-11 rounded-xl font-semibold"
             >
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </Button>
           </Link>
         </div>
 
         {/* Support */}
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+        <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 shadow-sm text-center">
           <p className="text-sm text-blue-800">
             Si le problème persiste, <Link href="/contact" className="font-semibold underline">contactez-nous</Link>
           </p>

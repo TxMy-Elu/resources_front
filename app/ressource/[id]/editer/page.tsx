@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -26,7 +25,8 @@ export default function EditRessourcePage() {
   const [saved, setSaved] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, files } = e.target as any;
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, files } = target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'file' ? files?.[0] : value
@@ -45,19 +45,19 @@ export default function EditRessourcePage() {
       <MainHeader />
       <PageHeader title="Éditer une Ressource" description="Modifiez votre ressource" showBackButton={true} />
 
-      <main className="flex-grow">
+      <main className="grow">
         <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="bg-white p-6 rounded-2xl border border-border-standard/60 shadow-sm space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
 
             {saved && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-50 border border-green-100 rounded-2xl shadow-sm p-4">
                 <p className="text-green-800 text-sm font-medium">✅ Ressource mise à jour !</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-xs font-semibold">Titre *</Label>
+                <Label htmlFor="title" className="text-xs font-semibold text-gray-600">Titre *</Label>
                 <Input
                   type="text"
                   id="title"
@@ -65,12 +65,12 @@ export default function EditRessourcePage() {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Ex: Guide pratique sur..."
-                  className="h-11"
+                  className="h-11 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-semibold">Description *</Label>
+                <Label htmlFor="description" className="text-xs font-semibold text-gray-600">Description *</Label>
                 <textarea
                   id="description"
                   name="description"
@@ -78,19 +78,19 @@ export default function EditRessourcePage() {
                   onChange={handleChange}
                   placeholder="Décrivez votre ressource..."
                   rows={5}
-                  className="w-full border border-border-standard rounded-lg px-4 py-3 resize-none"
+                  className="w-full border border-gray-200 rounded-xl bg-gray-50/50 px-4 py-3 resize-none outline-none focus:ring-1 focus:ring-primary/20"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-xs font-semibold">Catégorie *</Label>
+                  <Label htmlFor="category" className="text-xs font-semibold text-gray-600">Catégorie *</Label>
                   <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full h-11 border border-border-standard rounded-lg px-4 text-sm"
+                    className="w-full h-11 border border-gray-200 rounded-xl bg-gray-50/50 px-4 text-sm outline-none focus:ring-1 focus:ring-primary/20"
                   >
                     <option value="Éducation">Éducation</option>
                     <option value="Bien-être">Bien-être</option>
@@ -101,13 +101,13 @@ export default function EditRessourcePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="type" className="text-xs font-semibold">Type *</Label>
+                  <Label htmlFor="type" className="text-xs font-semibold text-gray-600">Type *</Label>
                   <select
                     id="type"
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
-                    className="w-full h-11 border border-border-standard rounded-lg px-4 text-sm"
+                    className="w-full h-11 border border-gray-200 rounded-xl bg-gray-50/50 px-4 text-sm outline-none focus:ring-1 focus:ring-primary/20"
                   >
                     <option value="article">Article</option>
                     <option value="video">Vidéo</option>
@@ -120,7 +120,7 @@ export default function EditRessourcePage() {
 
               {formData.type === 'link' && (
                 <div className="space-y-2">
-                  <Label htmlFor="url" className="text-xs font-semibold">URL *</Label>
+                  <Label htmlFor="url" className="text-xs font-semibold text-gray-600">URL *</Label>
                   <Input
                     type="url"
                     id="url"
@@ -132,8 +132,8 @@ export default function EditRessourcePage() {
                 </div>
               )}
 
-              <div className="space-y-3 p-4 bg-surface-muted/30 rounded-lg border border-border-standard/30">
-                <Label className="text-xs font-semibold block">Niveau de visibilité *</Label>
+              <div className="space-y-3 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
+                <Label className="text-xs font-semibold text-gray-600 block">Niveau de visibilité *</Label>
                 <div className="space-y-2">
                   <div className="flex items-start gap-3">
                     <input
@@ -188,14 +188,14 @@ export default function EditRessourcePage() {
               <div className="flex gap-3 pt-4">
                 <Button
                   type="submit"
-                  className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-11 rounded-lg text-base"
+                  className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-11 rounded-xl text-base"
                 >
                   Enregistrer les changements
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 bg-white text-content border-border-standard hover:bg-surface-muted font-semibold px-8 h-11 rounded-lg text-base"
+                  className="flex-1 bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-11 rounded-xl text-base"
                 >
                   <Link href="/dashboard" className="w-full">Annuler</Link>
                 </Button>

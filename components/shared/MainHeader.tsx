@@ -132,7 +132,7 @@ export const MainHeader = () => {
                 )}
                 onClick={() => setMenuOpen(false)}
               >
-                S'inscrire
+                S&apos;inscrire
               </Link>
               <Link
                 href="/connexion"
