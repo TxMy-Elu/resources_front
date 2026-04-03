@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export const MainFooter = () => {
   return (
@@ -23,9 +24,9 @@ export const MainFooter = () => {
           <div className="space-y-6">
             <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Informations</h3>
             <nav className="flex flex-col gap-3">
-              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Plan du site</a>
-              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Accessibilité : non conforme</a>
-              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Mentions légales</a>
+              <Link href="/plan-du-site" className="text-sm font-bold text-content hover:text-primary transition-colors">Plan du site</Link>
+              <Link href="/declaration-accessibilite" className="text-sm font-bold text-content hover:text-primary transition-colors">Accessibilité</Link>
+              <Link href="/conditions" className="text-sm font-bold text-content hover:text-primary transition-colors">Mentions légales</Link>
             </nav>
           </div>
 
@@ -33,8 +34,9 @@ export const MainFooter = () => {
           <div className="space-y-6">
             <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Aide & Contact</h3>
             <nav className="flex flex-col gap-3">
-              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">Nous contacter</a>
-              <a href="#" className="text-sm font-bold text-content hover:text-primary transition-colors">FAQ</a>
+              <Link href="/contact" className="text-sm font-bold text-content hover:text-primary transition-colors">Nous contacter</Link>
+              <Link href="/faq" className="text-sm font-bold text-content hover:text-primary transition-colors">FAQ</Link>
+              <Link href="/politique-confidentialite" className="text-sm font-bold text-content hover:text-primary transition-colors">Confidentialité</Link>
             </nav>
           </div>
 
@@ -42,12 +44,12 @@ export const MainFooter = () => {
           <div className="space-y-6">
             <h3 className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] opacity-70">Suivez-nous</h3>
             <div className="flex gap-4">
-              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm">
-                <div className="w-3 h-3 bg-primary/40 rounded-sm" />
-              </div>
-              <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm">
-                <div className="w-3 h-3 bg-primary/40 rounded-sm rotate-45" />
-              </div>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm hover:bg-blue-50">
+                <span className="text-sm font-bold text-blue-600">f</span>
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-xl bg-white flex items-center justify-center border border-border-standard/50 hover:border-primary/20 transition-all cursor-pointer shadow-sm hover:bg-blue-50">
+                <span className="text-sm font-bold text-blue-400">𝕏</span>
+              </a>
             </div>
           </div>
         </div>
@@ -58,9 +60,9 @@ export const MainFooter = () => {
             © 2026 (RE)SOURCES RELATIONNELLES
           </p>
           <div className="flex items-center gap-6">
-            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">service-public.fr</span>
-            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">data.gouv.fr</span>
-            <span className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter">france.fr</span>
+            <a href="https://service-public.fr" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter hover:text-primary transition-colors">service-public.fr</a>
+            <a href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter hover:text-primary transition-colors">data.gouv.fr</a>
+            <a href="https://france.fr" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-primary/60 uppercase tracking-tighter hover:text-primary transition-colors">france.fr</a>
           </div>
         </div>
       </div>

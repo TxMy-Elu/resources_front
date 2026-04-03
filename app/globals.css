@@ -27,18 +27,18 @@
   --color-secondary-800: #7A530E;
   --color-secondary-900: #563A0A;
 
-  /* Surfaces : Style "Linear/Vercel" - Blanc pur et gris très subtils */
+  /* Surfaces  */
   --color-surface: #FFFFFF;
   --color-surface-muted: #F8FAFC; /* Slate 50 */
   --color-surface-sunken: #F1F5F9; /* Slate 100 */
 
-  /* Content : Contraste maximal mais doux */
+  /* Content x */
   --color-content: #020617; /* Slate 950 */
   --color-content-muted: #475569; /* Slate 600 */
   --color-content-subtle: #64748B; /* Slate 500 */
   --color-content-inverse: #FFFFFF;
 
-  /* Statuts : Tons vifs mais élégants */
+  /* Statuts */
   --color-success: #059669;
   --color-success-subtle: #ECFDF5;
   --color-danger: #E11D48;
@@ -48,7 +48,7 @@
   --color-info: #2563EB;
   --color-info-subtle: #EFF6FF;
 
-  /* Borders : Extrêmement fines */
+  /* Borders */
   --color-border-standard: #E2E8F0; /* Slate 200 */
-  --color-border-focus: #3B82F6; /* Focus ring standard moderne (Bleu) */
+  --color-border-focus: #3B82F6; /* Focus ring (Bleu) */
 }
