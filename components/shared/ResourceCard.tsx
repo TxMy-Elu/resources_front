@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { CommentsButton } from './CommentsButton';
 
 export type ResourceType = 'video' | 'pdf' | 'article' | 'audio' | 'event';
 
@@ -21,6 +22,8 @@ export interface ResourceCardProps {
   fileSize?: string;
   onAction?: () => void;
   className?: string;
+  resourceId?: number;
+  isAuthenticated?: boolean;
 }
 
 const typeConfig: Record<ResourceType, { icon: React.ReactNode; label: string; actionLabel: string }> = {
@@ -61,9 +64,14 @@ export const ResourceCard = ({
   author,
   isNew,
   onAction,
-  className
+  className,
+  resourceId,
+  isAuthenticated = false
 }: ResourceCardProps) => {
   const config = typeConfig[type];
+
+  // Fallback to article type if config not found
+  const safeConfig = config || typeConfig['article'];
 
   return (
     <Card className={cn(
@@ -82,11 +90,11 @@ export const ResourceCard = ({
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-content-subtle opacity-50">
-              {config.icon}
-            </div>
-          )}
+           ) : (
+             <div className="w-full h-full flex items-center justify-center text-content-subtle opacity-50">
+               {safeConfig.icon}
+             </div>
+           )}
         </div>
         
         {/* Overlays */}
@@ -102,14 +110,14 @@ export const ResourceCard = ({
         </div>
       </div>
 
-      <div className="flex flex-col flex-grow p-5">
-        <div className="flex items-center gap-2 mb-3 text-content-subtle">
-          <div className="w-4 h-4 opacity-70">
-            {config.icon}
-          </div>
-          <span className="text-[11px] font-medium tracking-wide">
-            {config.label}
-          </span>
+       <div className="flex flex-col flex-grow p-5">
+         <div className="flex items-center gap-2 mb-3 text-content-subtle">
+           <div className="w-4 h-4 opacity-70">
+             {safeConfig.icon}
+           </div>
+           <span className="text-[11px] font-medium tracking-wide">
+             {safeConfig.label}
+           </span>
           {duration && (
             <>
               <span className="w-1 h-1 rounded-full bg-border-standard" />
@@ -137,13 +145,24 @@ export const ResourceCard = ({
               {author || "Ministère"}
             </span>
           </div>
-          <Button 
-            variant="ghost"
-            onClick={onAction}
-            className="text-primary hover:text-primary-700 hover:bg-primary/5 font-semibold text-xs px-3 h-8 rounded-lg transition-colors"
-          >
-            {config.actionLabel} →
-          </Button>
+          <div className="flex items-center gap-1">
+            {resourceId !== undefined && (
+              <div onClick={(e) => e.preventDefault()}>
+                <CommentsButton
+                  resourceId={resourceId}
+                  resourceTitle={title}
+                  isAuthenticated={isAuthenticated}
+                />
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              onClick={onAction}
+              className="text-primary hover:text-primary-700 hover:bg-primary/5 font-semibold text-xs px-3 h-8 rounded-lg transition-colors"
+            >
+              {safeConfig.actionLabel} →
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

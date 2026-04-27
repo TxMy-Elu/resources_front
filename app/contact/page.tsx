@@ -8,23 +8,45 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
+import { sendContactMessage } from '@/lib/api';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', category: 'général', message: '' });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [ticketId, setTicketId] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFeedback(null);
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      alert('Remplir tous les champs');
+      setFeedback('Remplir tous les champs.');
       return;
     }
-    alert(`✅ Message envoyé à support@ressources.fr\n\nNous vous répondrons dans les 48h.`);
-    setSent(true);
-    setTimeout(() => {
-      setForm({ name: '', email: '', category: 'général', message: '' });
-      setSent(false);
-    }, 3000);
+
+    setLoading(true);
+
+    try {
+      const response = await sendContactMessage({
+        ...form,
+        subject: form.category,
+      });
+
+      setSent(true);
+      setFeedback(response.message || 'Message envoye avec succes.');
+      setTicketId(response.ticketId || null);
+      setTimeout(() => {
+        setForm({ name: '', email: '', category: 'général', message: '' });
+        setSent(false);
+        setFeedback(null);
+        setTicketId(null);
+      }, 3000);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : 'Envoi impossible.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,6 +110,12 @@ export default function ContactPage() {
                   <h2 className="text-2xl font-bold text-content mb-2">Envoyez-nous un message</h2>
                   <p className="text-content-muted text-sm mb-8">Remplissez le formulaire ci-dessous et nous vous répondrons au plus vite.</p>
 
+                  {feedback && (
+                    <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                      {feedback}
+                    </div>
+                  )}
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -141,9 +169,10 @@ export default function ContactPage() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base transition-all shadow-sm"
+                      disabled={loading}
+                      className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base transition-all shadow-sm disabled:opacity-50"
                     >
-                      Envoyer le message
+                      {loading ? 'Envoi en cours...' : 'Envoyer le message'}
                     </Button>
 
                     <p className="text-xs text-content-muted text-center">
@@ -160,10 +189,18 @@ export default function ContactPage() {
                   <CheckCircle className="w-16 h-16 text-green-500" />
                 </div>
                 <h2 className="text-3xl font-bold text-content">Message envoyé !</h2>
-                <p className="text-content-muted text-lg">Merci de nous avoir contactés.</p>
+                <p className="text-content-muted text-lg">{feedback || 'Merci de nous avoir contactes.'}</p>
                 <p className="text-sm text-content-muted">Nous vous répondrons dans les 48 heures à l&apos;adresse email que vous avez fournie.</p>
+                {ticketId && (
+                  <p className="text-sm font-semibold text-primary">Ticket : {ticketId}</p>
+                )}
                 <Button
-                  onClick={() => setForm({ name: '', email: '', category: 'général', message: '' })}
+                  onClick={() => {
+                    setForm({ name: '', email: '', category: 'général', message: '' });
+                    setSent(false);
+                    setFeedback(null);
+                    setTicketId(null);
+                  }}
                   className="w-full mt-6 bg-primary text-white h-11 rounded-xl font-semibold"
                 >
                   Envoyer un autre message

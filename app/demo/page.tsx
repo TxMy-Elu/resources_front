@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,69 +15,75 @@ import { TestimonialCard } from '@/components/shared/TestimonialCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { AdminTable } from '@/components/shared/AdminTable';
 import { Users, FileText, Calendar } from 'lucide-react';
+import { getResources, ApiResource } from '@/lib/api';
 
 export default function DemoPage() {
-  const mockResources: ResourceCardProps[] = [
-    {
-      type: "video",
-      title: "Comprendre la parentalité positive en 10 minutes",
-      description: "Une exploration visuelle des concepts clés de la parentalité bienveillante, avec des conseils pratiques pour le quotidien.",
-      imageUrl: "https://images.unsplash.com/photo-1536640712247-c45474762ef4?auto=format&fit=crop&q=80&w=800",
-      category: "Éducation",
-      duration: "10:24",
-      author: "Ministère de la Santé",
-      isNew: true
-    },
-    {
-      type: "pdf",
-      title: "Guide complet des aides aux familles 2026",
-      description: "Toutes les prestations familiales détaillées : conditions d'éligibilité, montants et démarches administratives simplifiées.",
-      imageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=800",
-      category: "Administratif",
-      fileSize: "4.2 MB",
-      author: "CAF",
-      isNew: false
-    },
-    {
-      type: "article",
-      title: "Gérer le temps d'écran des enfants : conseils d'experts",
-      description: "Comment instaurer un dialogue sain autour du numérique sans créer de conflit au sein du foyer familial.",
-      imageUrl: "https://images.unsplash.com/photo-1543269664-76bc3997d9ea?auto=format&fit=crop&q=80&w=800",
-      category: "Bien-être",
-      author: "Observatoire du Numérique",
-      isNew: false
-    },
-    {
-      type: "event",
-      title: "Conférence : La communication non-violente",
-      description: "Participez à notre événement annuel avec Marshall Rosenberg (invité d'honneur) sur le dialogue au sein du couple.",
-      imageUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800",
-      category: "Événement",
-      duration: "14 Mai 2026",
-      author: "Assoc. Relat.",
-      isNew: true
-    },
-    {
-      type: "audio",
-      title: "Podcast : Écouter ses enfants sans juger",
-      description: "Épisode 12 : Les techniques d'écoute active pour renforcer le lien de confiance avec ses adolescents.",
-      imageUrl: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&q=80&w=800",
-      category: "Podcast",
-      duration: "35 min",
-      author: "Radio Famille",
-      isNew: false
-    },
-    {
-      type: "pdf",
-      title: "Fiche pratique : Les premiers gestes de secours",
-      description: "Une fiche synthétique à imprimer et à garder dans sa pharmacie pour réagir vite en cas d'accident domestique.",
-      imageUrl: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&q=80&w=800",
-      category: "Santé",
-      fileSize: "850 KB",
-      author: "Protection Civile",
-      isNew: false
-    }
-  ];
+  const [resources, setResources] = useState<ApiResource[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getResources();
+        setResources(data.slice(0, 8)); // Limiter à 8 pour la démo
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const mockResources: ResourceCardProps[] = resources.map(r => {
+    // Map type from API format to component format
+    const typeMap: Record<string, 'video' | 'pdf' | 'article' | 'audio' | 'event'> = {
+      'video': 'video',
+      'pdf': 'pdf',
+      'article': 'article',
+      'audio': 'audio',
+      'event': 'event',
+      'default': 'article'
+    };
+
+    const resourceType = typeMap[r.type_ressource?.toLowerCase() || ''] || 'article';
+
+    return {
+      type: resourceType,
+      title: r.titre,
+      description: r.description,
+      imageUrl: r.imageUrl || 'https://images.unsplash.com/photo-1536640712247-c45474762ef4?auto=format&fit=crop&q=80&w=800',
+      category: r.category || 'Général',
+      author: r.createur,
+      isNew: new Date(r.created_at) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    };
+  });
+
+  // Badge component
+  function Badge({ children, variant = "default", className = "" }: { children: React.ReactNode, variant?: string, className?: string }) {
+    const variants: Record<string, string> = {
+      default: "bg-primary text-white",
+      outline: "border border-primary text-primary bg-transparent",
+      secondary: "bg-secondary text-content"
+    };
+    return (
+      <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
+        {children}
+      </span>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <main className="grow flex items-center justify-center">
+          <p className="text-content-muted text-lg">Chargement des ressources...</p>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">

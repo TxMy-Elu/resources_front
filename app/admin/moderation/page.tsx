@@ -1,64 +1,82 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { CheckCircle, XCircle, Eye, X } from 'lucide-react';
+import { getPendingResources, validateResource, suspendResource } from '@/lib/api';
+import { RoleGuard } from '@/components/shared/RoleGuard';
+
+interface Resource {
+  id: number;
+  title: string;
+  author: string;
+  category: string;
+  type: string;
+  submittedAt: string;
+  description: string;
+  fullContent: string;
+}
 
 export default function AdminModerationPage() {
-  const [resources, setResources] = useState([
-    {
-      id: 1,
-      title: 'Guide pratique : Comment gérer son budget familial',
-      author: 'Marie Leclerc',
-      category: 'Administratif',
-      type: 'pdf',
-      submittedAt: '2024-02-25',
-      description: 'Un guide complet pour les familles souhaitant mieux gérer leur budget...',
-      fullContent: 'Contenu complet du guide : Ce guide vous expliquera comment gérer efficacement le budget de votre famille. Vous découvrirez les meilleures pratiques pour économiser, planifier et atteindre vos objectifs financiers.'
-    },
-    {
-      id: 2,
-      title: 'Vidéo : Atelier méditation pour parents',
-      author: 'Jean Moreau',
-      category: 'Bien-être',
-      type: 'video',
-      submittedAt: '2024-02-24',
-      description: 'Découvrez les techniques de méditation adaptées aux parents occupés...',
-      fullContent: 'Contenu complet : Cette vidéo de 15 minutes vous propose des exercices de méditation spécialement conçus pour les parents. Vous apprendrez à gérer le stress et à trouver de la sérénité malgré l\'emploi du temps chargé.'
-    },
-    {
-      id: 3,
-      title: 'Article : Nouvelles aides sociales 2026',
-      author: 'Sophie Laurent',
-      category: 'Administratif',
-      type: 'article',
-      submittedAt: '2024-02-23',
-      description: 'Résumé des nouvelles aides mises en place en 2026...',
-      fullContent: 'Contenu complet : Découvrez les nouvelles aides sociales disponibles en 2026. Cet article détaille les critères d\'éligibilité, les démarches à suivre et les montants accordés.'
-    }
-  ]);
-
-  const [previewData, setPreviewData] = useState<typeof resources[0] | null>(null);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [previewData, setPreviewData] = useState<Resource | null>(null);
   const [approvedCount, setApprovedCount] = useState(42);
   const [rejectedCount, setRejectedCount] = useState(3);
 
-  const handleApprove = (id: number) => {
-    const approved = resources.find(r => r.id === id);
-    if (approved) {
-      setApprovedCount(approvedCount + 1);
-      setResources(resources.filter(r => r.id !== id));
-      alert(`✅ Ressource "${approved.title}" approuvée et publiée !`);
+  useEffect(() => {
+    const fetchPendingResources = async () => {
+      try {
+        const pending = await getPendingResources();
+        const mappedResources: Resource[] = pending.map(r => ({
+          id: r.id,
+          title: r.titre,
+          author: r.createur,
+          category: '',
+          type: 'article',
+          submittedAt: r.dateCreation,
+          description: r.titre,
+          fullContent: r.titre
+        }));
+        setResources(mappedResources);
+      } catch (error) {
+        console.error('Error fetching pending resources:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPendingResources();
+  }, []);
+
+  const handleApprove = async (id: number) => {
+    try {
+      await validateResource(id);
+      const approved = resources.find(r => r.id === id);
+      if (approved) {
+        setApprovedCount(approvedCount + 1);
+        setResources(resources.filter(r => r.id !== id));
+        alert(`✅ Ressource "${approved.title}" approuvée et publiée !`);
+      }
+    } catch (error) {
+      console.error('Error approving resource:', error);
+      alert('Erreur lors de l\'approbation');
     }
   };
 
-  const handleReject = (id: number) => {
-    const rejected = resources.find(r => r.id === id);
-    if (rejected) {
-      setRejectedCount(rejectedCount + 1);
-      setResources(resources.filter(r => r.id !== id));
-      alert(`❌ Ressource "${rejected.title}" rejetée. Email d'explication envoyé à ${rejected.author}.`);
+  const handleReject = async (id: number) => {
+    try {
+      await suspendResource(id);
+      const rejected = resources.find(r => r.id === id);
+      if (rejected) {
+        setRejectedCount(rejectedCount + 1);
+        setResources(resources.filter(r => r.id !== id));
+        alert(`❌ Ressource "${rejected.title}" rejetée. Email d'explication envoyé à ${rejected.author}.`);
+      }
+    } catch (error) {
+      console.error('Error rejecting resource:', error);
+      alert('Erreur lors du rejet');
     }
   };
 
@@ -71,6 +89,7 @@ export default function AdminModerationPage() {
   };
 
   return (
+    <RoleGuard required="moderateur">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
 
@@ -90,7 +109,11 @@ export default function AdminModerationPage() {
         </div>
 
         {/* Resources List */}
-        {resources.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-content-muted text-lg font-medium">Chargement...</p>
+          </div>
+        ) : resources.length > 0 ? (
           <div className="space-y-6">
             {resources.map((resource) => (
               <div key={resource.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -299,6 +322,7 @@ export default function AdminModerationPage() {
         </div>
       )}
     </div>
+    </RoleGuard>
   );
 }
 

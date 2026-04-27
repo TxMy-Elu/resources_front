@@ -1,16 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { ResourceComments } from '@/components/shared/ResourceComments';
 import Link from 'next/link';
 import { Heart, Share2, AlertCircle, Calendar } from 'lucide-react';
 
 export default function RessourceDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = React.use(props.params);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token') || localStorage.getItem('auth_token');
+    setIsAuthenticated(!!token);
+  }, []);
 
   // Mock data - in real app, fetch from API based on params.id
   const resource = {
@@ -210,42 +217,12 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
               </section>
 
               {/* Reviews/Ratings Section */}
-              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-                <h2 className="text-lg font-bold text-content">Avis</h2>
-
-                <div className="grid grid-cols-3 gap-2 pb-4 border-b border-gray-100">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-primary">{resource.rating}</p>
-                    <p className="text-xs text-content-muted">sur 5 ⭐</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-primary">{resource.reviews}</p>
-                    <p className="text-xs text-content-muted">avis</p>
-                  </div>
-                  <div>
-                    <Button className="w-full bg-primary text-white hover:bg-primary-700 font-semibold h-8 rounded-xl text-xs">
-                      Ajouter
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Sample Reviews */}
-                <div className="space-y-2">
-                  {[1, 2].map((review) => (
-                    <div key={review} className="p-3 bg-gray-50/70 rounded-xl border border-gray-100">
-                      <div className="flex justify-between items-start mb-1">
-                        <div>
-                          <p className="font-semibold text-content text-sm">Jean Dupont</p>
-                          <p className="text-xs text-content-muted">Il y a 2 semaines</p>
-                        </div>
-                        <span className="text-xs font-semibold">⭐ 5/5</span>
-                      </div>
-                      <p className="text-xs text-content-muted">
-                        Très bonne ressource ! Pratique et facile à comprendre.
-                      </p>
-                    </div>
-                  ))}
-                </div>
+              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                <h2 className="text-lg font-bold text-content mb-4">Avis</h2>
+                <ResourceComments
+                  resourceId={resource.id}
+                  isAuthenticated={isAuthenticated}
+                />
               </section>
             </div>
 

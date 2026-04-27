@@ -9,8 +9,12 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 export default function ConnexionPage() {
+  const router = useRouter();
+  const { login, error: authError } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,6 +23,7 @@ export default function ConnexionPage() {
 
   const [loading, setLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -28,26 +33,36 @@ export default function ConnexionPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
 
     if (!formData.email.trim() || !formData.password.trim()) {
-      alert('❌ Veuillez remplir tous les champs');
+      setErrorMessage('Veuillez remplir tous les champs.');
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      alert(`✅ Bienvenue ${formData.email} !\n\nRedirection vers le catalogue...`);
+
+    try {
+      const success = await login(formData.email, formData.password);
+      if (!success) {
+        setErrorMessage(authError || 'Connexion impossible.');
+        return;
+      }
+
       setLoggedIn(true);
-      setTimeout(() => {
-        window.location.href = '/catalogue';
-      }, 1000);
-    }, 1500);
+      router.push('/catalogue');
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Connexion impossible.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+    <div className="min-h-screen bg-[#FDFDFD] flex flex-col" suppressHydrationWarning>
       <MainHeader />
       <PageHeader title="Se Connecter" description="Accédez à votre compte (RE)SOURCES" showBackButton={false} />
 
@@ -62,7 +77,12 @@ export default function ConnexionPage() {
                 <p className="text-content-muted">Redirection en cours...</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" suppressHydrationWarning>
+                {errorMessage && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {errorMessage}
+                  </div>
+                )}
                 <div>
                   <Label className="text-xs font-semibold text-gray-600">Email</Label>
                   <Input
@@ -119,8 +139,7 @@ export default function ConnexionPage() {
 
             <div className="bg-green-50 p-4 rounded-2xl border border-green-100 shadow-sm text-xs text-green-800">
               <p className="font-semibold mb-1">Données de test</p>
-              <p>Email : test@example.com</p>
-              <p>Mot de passe : password123</p>
+              <p>Utilisez un compte valide du backend configuré dans `NEXT_PUBLIC_API_URL`.</p>
             </div>
           </div>
         </div>

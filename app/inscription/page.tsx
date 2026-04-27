@@ -9,8 +9,11 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { register } from '@/lib/api';
 
 export default function InscriptionPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -23,6 +26,8 @@ export default function InscriptionPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
@@ -33,29 +38,59 @@ export default function InscriptionPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
 
     if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
-      alert('❌ Veuillez remplir tous les champs');
+      setErrorMessage('Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      alert('❌ Les mots de passe ne correspondent pas');
+      setErrorMessage('Les mots de passe ne correspondent pas.');
       return;
     }
 
     if (!formData.acceptTerms || !formData.acceptRGPD) {
-      alert('❌ Vous devez accepter les conditions et la politique RGPD');
+      setErrorMessage('Vous devez accepter les conditions et la politique RGPD.');
       return;
     }
 
-    alert(`✅ Inscription réussie !\n\nUn email de vérification a été envoyé à ${formData.email}\n\nRedirection vers la connexion...`);
-    setSubmitted(true);
-    setTimeout(() => {
-      window.location.href = '/connexion';
-    }, 2000);
+    setLoading(true);
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        role: formData.role,
+      });
+
+      setSubmitted(true);
+      setTimeout(() => {
+        router.push('/connexion');
+      }, 1500);
+    } catch (error) {
+      let message = 'Inscription impossible.';
+
+      if (error instanceof Error) {
+        const errorMsg = error.message;
+        if (errorMsg.includes('JWT Token not found')) {
+          message = 'API protection error - vérifiez la configuration backend.';
+        } else if (errorMsg.includes('Email')) {
+          message = errorMsg;
+        } else if (errorMsg.includes('password') || errorMsg.includes('Password')) {
+          message = 'Le mot de passe ne respecte pas les critères (min. 8 caractères, 1 majuscule, 1 chiffre).';
+        } else {
+          message = errorMsg;
+        }
+      }
+
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,11 +106,16 @@ export default function InscriptionPage() {
               <div className="text-center space-y-4 py-8">
                 <div className="text-5xl">✅</div>
                 <h2 className="text-2xl font-bold text-content">Inscription Réussie !</h2>
-                <p className="text-content-muted">Un email de vérification a été envoyé.</p>
+                <p className="text-content-muted">Votre compte a ete cree via l&apos;API.</p>
                 <p className="text-sm text-content-muted">Redirection en cours...</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {errorMessage && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {errorMessage}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs font-semibold text-gray-600">Prénom *</Label>
@@ -136,8 +176,12 @@ export default function InscriptionPage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base mt-6">
-                  S&apos;inscrire
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base mt-6 disabled:opacity-50"
+                >
+                  {loading ? 'Inscription en cours...' : 'S&apos;inscrire'}
                 </Button>
 
                 <div className="text-center">
@@ -147,8 +191,8 @@ export default function InscriptionPage() {
             )}
 
             <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 shadow-sm text-xs text-blue-800">
-              <p className="font-semibold mb-1">Vérification email</p>
-              <p>Un email de vérification sera envoyé après l&apos;inscription. Cliquez sur le lien pour confirmer votre compte.</p>
+              <p className="font-semibold mb-1">API inscription</p>
+              <p>Cette page cree le compte via l&apos;endpoint documente dans `api.md`.</p>
             </div>
           </div>
         </div>

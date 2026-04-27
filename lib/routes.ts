@@ -200,8 +200,12 @@ export const ROLE_REQUIREMENTS = {
 export const API_ENDPOINTS = {
   // Authentication
   login: '/api/auth/login',
-  logout: '/api/auth/logout',
   register: '/api/auth/register',
+  refresh: '/api/auth/refresh',
+  forgot_password: '/api/auth/forgot-password',
+  reset_password: '/api/auth/reset-password',
+  logout: '/api/logout',
+  me: '/api/me',
   verify_email: '/api/auth/verify-email',
 
   // Resources
@@ -210,22 +214,34 @@ export const API_ENDPOINTS = {
   resources_create: '/api/resources',
   resources_update: (id: number) => `/api/resources/${id}`,
   resources_delete: (id: number) => `/api/resources/${id}`,
+  resource_comments: (id: number) => `/api/resources/${id}/comments`,
+  resource_save: (id: number) => `/api/resources/${id}/save`,
+  trending_resources: '/api/resources/trending',
 
   // Categories
   categories_list: '/api/categories',
   categories_create: '/api/categories',
+  categories_update: (id: number) => `/api/categories/${id}`,
+  categories_delete: (id: number) => `/api/categories/${id}`,
 
   // Users (Admin only)
-  users_list: '/api/admin/users',
-  users_detail: (id: number) => `/api/admin/users/${id}`,
-  users_create: '/api/admin/users',
-  users_update: (id: number) => `/api/admin/users/${id}`,
-  users_delete: (id: number) => `/api/admin/users/${id}`,
+  users_list: '/api/users',
+  users_detail: (id: number) => `/api/users/${id}`,
+  users_create: '/api/users',
+  users_update: (id: number) => `/api/users/${id}`,
+  users_delete: (id: number) => `/api/users/${id}`,
 
   // Moderation
   pending_resources: '/api/moderation/pending',
-  approve_resource: (id: number) => `/api/moderation/approve/${id}`,
-  reject_resource: (id: number) => `/api/moderation/reject/${id}`,
+  validate_resource: (id: number) => `/api/moderation/validate/${id}`,
+  suspend_resource: (id: number) => `/api/moderation/suspend/${id}`,
+
+  // Search / Contact / Admin
+  search: '/api/search',
+  contact: '/api/contact',
+  admin_stats: '/api/admin/stats',
+  documentation: '/api/doc',
+  documentation_json: '/api/doc.json',
 
   // Upload
   upload_file: '/api/upload',

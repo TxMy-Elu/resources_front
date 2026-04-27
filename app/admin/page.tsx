@@ -3,6 +3,7 @@
 import React from 'react';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
+import { RoleGuard } from '@/components/shared/RoleGuard';
 import { Button } from '@/components/ui/button';
 import { Users, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -67,6 +68,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
+    <RoleGuard required="admin">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
 
@@ -215,6 +217,7 @@ export default function AdminDashboardPage() {
 
       <MainFooter />
     </div>
+    </RoleGuard>
   );
 }
 

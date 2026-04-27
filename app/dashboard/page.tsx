@@ -1,64 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
 import { Heart, Eye, Edit2, Trash2 } from 'lucide-react';
+import { getResources, ApiResource } from '@/lib/api';
+import { RoleGuard } from '@/components/shared/RoleGuard';
 
 export default function DashboardPage() {
-  const [resources] = useState([
-    {
-      id: 1,
-      title: 'Guide pratique : Gestion du stress parental',
-      category: 'Bien-être',
-      type: 'article',
-      views: 145,
-      saved: 23,
-      status: 'Publié',
-      date: '15 mars 2026'
-    },
-    {
-      id: 2,
-      title: 'Vidéo : Communication positive avec les enfants',
-      category: 'Éducation',
-      type: 'video',
-      views: 312,
-      saved: 67,
-      status: 'Publié',
-      date: '10 mars 2026'
-    },
-    {
-      id: 3,
-      title: 'Podcast : Parentalité bienveillante',
-      category: 'Bien-être',
-      type: 'audio',
-      views: 89,
-      saved: 12,
-      status: 'En attente',
-      date: '28 février 2026'
-    }
-  ]);
+  const [resources, setResources] = useState<ApiResource[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [savedResources] = useState([
-    {
-      id: 101,
-      title: 'Ateliers pratiques : Méditation en famille',
-      author: 'Marie Leclerc',
-      category: 'Bien-être',
-      savedDate: '20 mars 2026'
-    },
-    {
-      id: 102,
-      title: 'Guide complet de la communication non-violente',
-      author: 'Jean Moreau',
-      category: 'Communication',
-      savedDate: '15 mars 2026'
-    }
-  ]);
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const data = await getResources();
+        setResources(data.slice(0, 3)); // Limiter à 3 ressources pour l'affichage
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchResources();
+  }, []);
+
+  // Le rendu utilise directement les ressources de l'API
+  const totalViews = resources.reduce((sum, r) => sum + (r.views || 0), 0);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <main className="grow flex items-center justify-center">
+          <p className="text-content-muted text-lg">Chargement...</p>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
 
   return (
+    <RoleGuard required="authenticated">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
       <PageHeader title="Mon Tableau de Bord" description="Gérez vos ressources et favoris" showBackButton={false} />
@@ -112,27 +97,27 @@ export default function DashboardPage() {
                       <tr key={r.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-semibold text-content">{r.title}</p>
-                            <p className="text-xs text-content-muted">{r.category} • {r.type}</p>
+                            <p className="font-semibold text-content">{r.titre}</p>
+                            <p className="text-xs text-content-muted">{r.category} • {r.type_ressource}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                            r.status === 'Publié' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                            r.statut === 'publie' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                           }`}>
-                            {r.status}
+                            {r.statut === 'publie' ? 'Publié' : 'En attente'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <Eye className="w-4 h-4 text-primary" />
-                            {r.views}
+                            {r.views || 0}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <Heart className="w-4 h-4 text-red-500" />
-                            {r.saved}
+                            0
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -154,15 +139,15 @@ export default function DashboardPage() {
 
             {/* Ressources Enregistrées */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-content">Ressources Enregistrées</h2>
+              <h2 className="text-2xl font-bold text-content">Ressources Créées Récemment</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {savedResources.map(r => (
+                {resources.slice(0, 2).map(r => (
                   <div key={r.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-content">{r.title}</h3>
-                        <p className="text-xs text-content-muted mt-1">Par {r.author}</p>
+                        <h3 className="font-semibold text-content">{r.titre}</h3>
+                        <p className="text-xs text-content-muted mt-1">Par {r.createur}</p>
                       </div>
                       <button className="text-red-600 hover:text-red-700">
                         <Heart className="w-5 h-5 fill-current" />
@@ -170,7 +155,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                       <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{r.category}</span>
-                      <span className="text-xs text-content-muted">{r.savedDate}</span>
+                      <span className="text-xs text-content-muted">{new Date(r.created_at).toLocaleDateString('fr-FR')}</span>
                     </div>
                   </div>
                 ))}
@@ -183,6 +168,7 @@ export default function DashboardPage() {
 
       <MainFooter />
     </div>
+    </RoleGuard>
   );
 }
 

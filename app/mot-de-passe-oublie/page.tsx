@@ -8,61 +8,36 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { forgotPassword } from '@/lib/api';
 
 export default function MotDePasseOubliePage() {
-  const [step, setStep] = useState<'email' | 'code' | 'reset' | 'success'>('email');
+  const router = useRouter();
+  const [step, setStep] = useState<'email' | 'success'>('email');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage(null);
     if (!email.trim()) {
-      alert('❌ Veuillez entrer votre email');
+      setMessage('Veuillez entrer votre email.');
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      alert(`✅ Un code de vérification a été envoyé à ${email}`);
-      setLoading(false);
-      setStep('code');
-    }, 1000);
-  };
-
-  const handleCodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!code.trim()) {
-      alert('❌ Veuillez entrer le code de vérification');
-      return;
-    }
-    if (code !== '123456') {
-      alert('❌ Code incorrect. Utilisez 123456 pour le test');
-      return;
-    }
-    setStep('reset');
-  };
-
-  const handleResetSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPassword.trim() || !confirmPassword.trim()) {
-      alert('❌ Veuillez remplir tous les champs');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      alert('❌ Les mots de passe ne correspondent pas');
-      return;
-    }
-    setLoading(true);
-    setTimeout(() => {
-      alert('✅ Mot de passe réinitialisé avec succès !');
-      setLoading(false);
+    try {
+      const response = await forgotPassword({ email });
+      setMessage(response.message || `Si un compte existe pour ${email}, un email de réinitialisation a été envoyé.`);
       setStep('success');
       setTimeout(() => {
-        window.location.href = '/connexion';
-      }, 1500);
-    }, 1000);
+        router.push('/connexion');
+      }, 2000);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Envoi impossible.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,6 +48,11 @@ export default function MotDePasseOubliePage() {
       <main className="grow">
         <div className="max-w-md mx-auto px-4 py-12">
           <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+            {message && (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                {message}
+              </div>
+            )}
 
             {/* Step 1 : Email */}
             {step === 'email' && (
@@ -94,7 +74,7 @@ export default function MotDePasseOubliePage() {
                   disabled={loading}
                   className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base disabled:opacity-50"
                 >
-                  {loading ? 'Envoi en cours...' : 'Envoyer un code'}
+                  {loading ? 'Envoi en cours...' : 'Envoyer l\'email'}
                 </Button>
 
                 <div className="text-center">
@@ -105,85 +85,11 @@ export default function MotDePasseOubliePage() {
               </form>
             )}
 
-            {/* Step 2 : Code */}
-            {step === 'code' && (
-              <form onSubmit={handleCodeSubmit} className="space-y-4">
-                <div>
-                  <Label className="text-xs font-semibold text-gray-600">Code de vérification</Label>
-                  <Input
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="000000"
-                    className="h-11 text-sm mt-2 text-center tracking-widest rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
-                  />
-                  <p className="text-xs text-content-muted mt-2">Un code a été envoyé à {email}</p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base"
-                >
-                  Vérifier le code
-                </Button>
-
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => setStep('email')}
-                    className="text-sm text-primary hover:underline font-semibold"
-                  >
-                    Modifier l&apos;email
-                  </button>
-                </div>
-
-                <div className="bg-green-50 p-3 rounded-xl border border-green-100 text-xs text-green-800">
-                  <p className="font-semibold">Code de test : 123456</p>
-                </div>
-              </form>
-            )}
-
-            {/* Step 3 : Reset Password */}
-            {step === 'reset' && (
-              <form onSubmit={handleResetSubmit} className="space-y-4">
-                <div>
-                  <Label className="text-xs font-semibold text-gray-600">Nouveau mot de passe</Label>
-                  <Input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 text-sm mt-2 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
-                  />
-                  <p className="text-xs text-content-muted mt-1">Min. 8 caractères, 1 majuscule, 1 chiffre</p>
-                </div>
-
-                <div>
-                  <Label className="text-xs font-semibold text-gray-600">Confirmer le mot de passe</Label>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 text-sm mt-2 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base disabled:opacity-50"
-                >
-                  {loading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe'}
-                </Button>
-              </form>
-            )}
-
-            {/* Step 4 : Success */}
             {step === 'success' && (
               <div className="text-center space-y-4 py-8">
                 <div className="text-5xl">✅</div>
-                <h2 className="text-2xl font-bold text-content">Mot de passe réinitialisé !</h2>
-                <p className="text-content-muted">Vous allez être redirigé vers la page de connexion.</p>
+                <h2 className="text-2xl font-bold text-content">Email envoyé</h2>
+                <p className="text-content-muted">Consultez votre boîte mail pour poursuivre la réinitialisation.</p>
               </div>
             )}
           </div>

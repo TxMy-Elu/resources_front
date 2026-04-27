@@ -1,97 +1,36 @@
-# Node modules and package manager artifacts
-/node_modules/
-.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-.pnpm-store/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Lockfiles: garder les lockfiles pour la reproductibilité (ne pas ignorer package-lock.json / yarn.lock / pnpm-lock.yaml)
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# Build / output
+# testing
+/coverage
+
+# next.js
 /.next/
-/.next/cache/
 /out/
-/dist/
-/build/
-/.istanbul_output/
-/out-storybook/
-/storybook-static/
 
-# Caches and temporary files
-.cache/
-.tmp/
-.vite/
-.esbuild/
-parcel-cache/
+# production
+/build
 
-# Coverage reports
-/coverage/
-/coverage-final.json
+# misc
+.DS_Store
+*.pem
 
-# Logs
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-# Environment files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
-# garder .env.example si nécessaire
+# local env files
+.env*.local
+.env
 
-# Next / TypeScript
-next-env.d.ts
+# vercel
+.vercel
+
+# typescript
 *.tsbuildinfo
-*.d.ts.map
-
-# IDEs and editors
-.vscode/
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# OS generated files
-.DS_Store
-Thumbs.db
-desktop.ini
-ehthumbs.db
-
-# Certificates and keys
-*.pem
-*.key
-*.crt
-*.pfx
-
-# Editor temporary files
-*~
-*.swp
-*.swo
-*.sublime-workspace
-
-# Miscellaneous
-*.log
-npm-debug.log*
-yarn-error.log*
-.sourcemaps
-*.tgz
-
-# Deployment / platform
-.vercel/
-.now/
-.netlify/
-firebase-debug.log
-
-# Windows: Visual Studio
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+next-env.d.ts

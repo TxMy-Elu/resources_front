@@ -1,43 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Edit, Trash2, Plus, Search, X } from 'lucide-react';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: 'Citoyen' | 'Modérateur' | 'Administrateur' | 'Super-administrateur';
-  status: 'Actif' | 'Inactif';
-  joinDate: string;
-  resourceCount: number;
-}
+import { createUser, deleteUser, getUsers, type ApiUser, updateUser } from '@/lib/api';
+import { RoleGuard } from '@/components/shared/RoleGuard';
 
 export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'Sophie Martin', email: 'sophie.martin@email.com', role: 'Citoyen', status: 'Actif', joinDate: '2024-01-15', resourceCount: 3 },
-    { id: 2, name: 'Thomas Dubois', email: 'thomas.dubois@email.com', role: 'Modérateur', status: 'Actif', joinDate: '2023-11-20', resourceCount: 0 },
-    { id: 3, name: 'Admin Central', email: 'admin@ressources.fr', role: 'Administrateur', status: 'Actif', joinDate: '2023-06-01', resourceCount: 0 },
-    { id: 4, name: 'Leila Kassam', email: 'leila.k@email.com', role: 'Citoyen', status: 'Inactif', joinDate: '2024-02-10', resourceCount: 1 },
-    { id: 5, name: 'Pierre Durand', email: 'pierre.durand@email.com', role: 'Modérateur', status: 'Actif', joinDate: '2024-01-05', resourceCount: 0 }
-  ]);
+  const [users, setUsers] = useState<ApiUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const loadUsers = async () => {
+    try {
+      const response = await getUsers();
+      
+      setUsers(response.data || []);
+      setApiError(null);
+    } catch (error) {
+      console.error('Error loading users:', error);
+      setUsers([]);
+      setApiError(error instanceof Error ? error.message : 'Chargement impossible');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<ApiUser | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
     email: string;
-    role: 'Citoyen' | 'Modérateur' | 'Administrateur' | 'Super-administrateur';
-    status: 'Actif' | 'Inactif';
+    role: ApiUser['role'];
+    status: ApiUser['status'];
   }>({
     name: '',
     email: '',
@@ -58,7 +66,7 @@ export default function AdminUsersPage() {
     setModalOpen(true);
   };
 
-  const openEditModal = (user: User) => {
+  const openEditModal = (user: ApiUser) => {
     setEditingUser(user);
     setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
     setModalOpen(true);
@@ -70,33 +78,38 @@ export default function AdminUsersPage() {
     setFormData({ name: '', email: '', role: 'Citoyen', status: 'Actif' });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name.trim() || !formData.email.trim()) {
       alert('Veuillez remplir tous les champs');
       return;
     }
 
-    if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...formData } : u));
-      alert(`✅ Utilisateur "${formData.name}" modifié`);
-    } else {
-      const newUser: User = {
-        id: Math.max(...users.map(u => u.id), 0) + 1,
-        ...formData,
-        joinDate: new Date().toISOString().split('T')[0],
-        resourceCount: 0
-      };
-      setUsers([...users, newUser]);
-      alert(`✅ Utilisateur "${formData.name}" créé`);
+    try {
+      if (editingUser) {
+        await updateUser(editingUser.id, formData);
+        await loadUsers();
+        alert(`✅ Utilisateur "${formData.name}" modifié`);
+      } else {
+        await createUser(formData);
+        await loadUsers();
+        alert(`✅ Utilisateur "${formData.name}" créé`);
+      }
+      closeModal();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Opération impossible');
     }
-    closeModal();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     const user = users.find(u => u.id === id);
-    setUsers(users.filter(u => u.id !== id));
-    alert(`❌ Utilisateur "${user?.name}" supprimé. Données anonymisées conformément au RGPD.`);
-    setDeleteConfirmId(null);
+    try {
+      await deleteUser(id);
+      await loadUsers();
+      alert(`❌ Utilisateur "${user?.name}" supprimé. Données anonymisées conformément au RGPD.`);
+      setDeleteConfirmId(null);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Suppression impossible');
+    }
   };
 
   const getRoleBadgeColor = (role: string) => {
@@ -110,6 +123,7 @@ export default function AdminUsersPage() {
   };
 
   return (
+    <RoleGuard required="admin">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
 
@@ -126,6 +140,17 @@ export default function AdminUsersPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+        {loading ? (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+            <p className="text-content-muted text-lg font-medium">Chargement des utilisateurs...</p>
+          </div>
+        ) : (
+          <>
+        {apiError && (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {apiError}
+          </div>
+        )}
         {/* Filters */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm mb-6 space-y-4">
           <div className="flex gap-4 flex-wrap">
@@ -218,6 +243,8 @@ export default function AdminUsersPage() {
             <p className="text-content-muted text-xs mt-1">Modérateurs+</p>
           </div>
         </div>
+        </>
+        )}
       </div>
 
       {/* Add/Edit Modal */}
@@ -239,7 +266,7 @@ export default function AdminUsersPage() {
               </div>
               <div>
                 <Label className="text-xs font-semibold text-gray-600">Rôle</Label>
-                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as User['role'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as ApiUser['role'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                   <option value="Citoyen">Citoyen</option>
                   <option value="Modérateur">Modérateur</option>
                   <option value="Administrateur">Administrateur</option>
@@ -248,7 +275,7 @@ export default function AdminUsersPage() {
               </div>
               <div>
                 <Label className="text-xs font-semibold text-gray-600">Statut</Label>
-                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as User['status'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as ApiUser['status'] })} className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50/50 text-sm px-3 mt-1.5 outline-none focus:ring-1 focus:ring-primary/20 transition-all cursor-pointer">
                   <option value="Actif">Actif</option>
                   <option value="Inactif">Inactif</option>
                 </select>
@@ -278,6 +305,7 @@ export default function AdminUsersPage() {
         </div>
       )}
     </div>
+    </RoleGuard>
   );
 }
 

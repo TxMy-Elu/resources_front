@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -8,24 +8,61 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin, Calendar, Edit2, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    firstName: 'Elio',
-    lastName: 'Durand',
-    email: 'elio.durand@example.com',
-    phone: '+33 6 12 34 56 78',
-    address: '123 Rue de la République, 75001 Paris',
-    bio: 'Parent engagé, passionné par le développement personnel et l\'éducation positive.',
-    role: 'Parent',
-    joinDate: '15 janvier 2024',
-    resourcesCreated: 12,
-    resourcesSaved: 47,
-    avatar: 'ED'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    bio: '',
+    role: '',
+    joinDate: '',
+    resourcesCreated: 0,
+    resourcesSaved: 0,
+    avatar: 'U'
   });
 
   const [formData, setFormData] = useState(profile);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push('/connexion');
+      return;
+    }
+
+    const nextProfile = {
+      firstName: user?.firstname || user?.name?.split(' ')[0] || 'Utilisateur',
+      lastName: user?.lastname || user?.name?.split(' ').slice(1).join(' ') || '',
+      email: user?.email || '',
+      phone: '',
+      address: '',
+      bio: '',
+      role: user?.role || 'Citoyen',
+      joinDate: '',
+      resourcesCreated: 0,
+      resourcesSaved: 0,
+      avatar: (user?.name || user?.email || 'U')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join('') || 'U'
+    };
+
+    setProfile(nextProfile);
+    setFormData(nextProfile);
+  }, [isAuthenticated, loading, router, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,6 +79,25 @@ export default function ProfilePage() {
     setFormData(profile);
     setIsEditing(false);
   };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/connexion');
+    router.refresh();
+  };
+
+  if (loading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <PageHeader title="Mon Profil" description="Gérez votre profil utilisateur" showBackButton={false} />
+        <main className="grow flex items-center justify-center px-4">
+          <p className="text-content-muted">Chargement du profil...</p>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
@@ -64,27 +120,15 @@ export default function ProfilePage() {
                     <p className="text-primary font-semibold mt-1">{profile.role}</p>
                     <p className="text-content-muted text-sm mt-1 flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
-                      Inscrit depuis {profile.joinDate}
+                      {profile.joinDate ? `Inscrit depuis ${profile.joinDate}` : 'Compte connecte'}
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} className="bg-primary text-white hover:bg-primary-700 h-10 px-4 rounded-xl font-semibold flex items-center gap-2">
-                      <Edit2 className="w-4 h-4" />
-                      Éditer
-                    </Button>
-                  ) : (
-                    <>
-                      <Button onClick={handleSave} className="bg-green-600 text-white hover:bg-green-700 h-10 px-4 rounded-xl font-semibold">
-                        Enregistrer
-                      </Button>
-                      <Button onClick={handleCancel} variant="outline" className="bg-white text-content border-gray-200 hover:bg-gray-50 h-10 px-4 rounded-xl font-semibold">
-                        Annuler
-                      </Button>
-                    </>
-                  )}
-                  <Button className="bg-red-50 text-red-600 hover:bg-red-100 h-10 px-4 rounded-xl font-semibold flex items-center gap-2 border border-red-100">
+                  <div className="flex items-center px-3 text-xs text-content-muted">
+                    Modification du profil non disponible tant que l&apos;API de mise a jour n&apos;est pas exposee.
+                  </div>
+                  <Button onClick={handleLogout} className="bg-red-50 text-red-600 hover:bg-red-100 h-10 px-4 rounded-xl font-semibold flex items-center gap-2 border border-red-100">
                     <LogOut className="w-4 h-4" />
                     Déconnexion
                   </Button>
