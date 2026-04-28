@@ -258,6 +258,7 @@ export interface ApiResource {
   type_ressource: string;
   statut: string;
   visibilite: string;
+  shareToken?: string;
   created_at: string;
   datePublication?: string;
   createur: string;
@@ -315,6 +316,15 @@ export async function getResourceById(id: string | number): Promise<ApiResource 
   }
 }
 
+export async function getResourceByShareToken(token: string): Promise<ApiResource | null> {
+  try {
+    return await api.get<ApiResource>(`/resources/share/${token}`, { includeAuth: false });
+  } catch (error) {
+    console.error(`Failed to fetch shared resource:`, error);
+    return null;
+  }
+}
+
 export interface CreateResourcePayload {
   titre: string;
   description: string;
@@ -341,6 +351,16 @@ export async function updateResource(
 
 export async function deleteResource(id: number): Promise<{ message: string }> {
   return api.delete(`/resources/${id}`);
+}
+
+export async function getMyResources(): Promise<ApiResource[]> {
+  try {
+    const response = await api.get<unknown>('/resources/mine');
+    return extractArrayData<ApiResource>(response);
+  } catch (error) {
+    console.error('Failed to fetch user resources:', error);
+    return [];
+  }
 }
 
 export async function getAdminResources(): Promise<ApiResource[]> {
@@ -508,6 +528,7 @@ export interface ForgotPasswordResponse {
 export interface ResetPasswordPayload {
   token: string;
   password: string;
+  passwordConfirm: string;
 }
 
 export interface ResetPasswordResponse {
@@ -577,7 +598,7 @@ export async function forgotPassword(
 export async function resetPassword(
   payload: ResetPasswordPayload
 ): Promise<ResetPasswordResponse> {
-  return api.post<ResetPasswordResponse>('/auth/reset-password', payload, {
+  return api.post<ResetPasswordResponse>('/reset-password', payload, {
     includeAuth: false,
   });
 }

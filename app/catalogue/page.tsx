@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ResourceCard, ResourceCardProps } from '@/components/shared/ResourceCard';
@@ -9,7 +8,7 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { getResources, getCategories, ApiResource, ApiCategory } from '@/lib/api';
 
 export default function CatalogPage() {
@@ -81,12 +80,6 @@ export default function CatalogPage() {
         title="Catalogue des Ressources"
         description="Explorez plus de 1000 ressources sélectionnées et validées par des experts"
         showBackButton={false}
-        actions={
-          <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-4 h-8 rounded-xl text-xs transition-all flex items-center gap-2">
-            <Plus className="w-3 h-3" />
-            Créer
-          </Button>
-        }
       />
 
       <main className="grow">
@@ -144,10 +137,8 @@ export default function CatalogPage() {
             <p className="text-content-muted font-medium">
               {filteredResources.length} ressource{filteredResources.length !== 1 ? 's' : ''} trouvée{filteredResources.length !== 1 ? 's' : ''}
             </p>
-            <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-6 h-11 rounded-xl text-sm transition-all">
-              <Link href="/ressource/creer" className="w-full h-full flex items-center justify-center">
-                + Créer une ressource
-              </Link>
+            <Button className="bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-6 h-11 rounded-xl text-sm transition-all" asChild>
+              <Link href="/ressource/creer">+ Créer une ressource</Link>
             </Button>
           </div>
 

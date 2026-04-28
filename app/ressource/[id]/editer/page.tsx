@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,37 +9,134 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
+import { getResourceById, updateResource, getCategories, ApiCategory } from '@/lib/api';
+
+const TYPES = [
+  { value: 'article',  label: 'Article'  },
+  { value: 'video',    label: 'Vidéo'    },
+  { value: 'podcast',  label: 'Podcast'  },
+  { value: 'activite', label: 'Activité' },
+  { value: 'jeu',      label: 'Jeu'      },
+  { value: 'lien',     label: 'Lien web' },
+];
 
 export default function EditRessourcePage() {
-  const [formData, setFormData] = useState({
-    title: 'Guide pratique : Gestion du stress parental',
-    description: 'Un guide complet pour les parents qui souhaitent gérer leur stress au quotidien...',
-    category: 'Bien-être',
-    type: 'article',
-    visibility: 'public',
-    file: null as File | null,
-    url: 'https://example.com',
-    duration: '',
-    consent: true
-  });
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
-  const [saved, setSaved] = useState(false);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [formData, setFormData] = useState({
+    titre: '',
+    description: '',
+    contenu: '',
+    categoryId: '',
+    type: '',
+    visibilite: 'public',
+    lien: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [apiError, setApiError] = useState('');
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [resource, cats] = await Promise.all([
+          getResourceById(id),
+          getCategories(),
+        ]);
+
+        if (!resource) {
+          setNotFound(true);
+          return;
+        }
+
+        setCategories(cats);
+        setFormData({
+          titre:       resource.titre,
+          description: resource.description,
+          contenu:     resource.contenu ?? '',
+          categoryId:  resource.categoryId?.toString() ?? '',
+          type:        resource.type_ressource,
+          visibilite:  resource.visibilite,
+          lien:        resource.lien ?? '',
+        });
+      } catch {
+        setApiError('Impossible de charger la ressource.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const target = e.target as HTMLInputElement;
-    const { name, value, type, files } = target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'file' ? files?.[0] : value
-    }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('✅ Ressource mise à jour avec succès !');
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    if (!formData.titre.trim() || !formData.description.trim()) {
+      setApiError('Le titre et la description sont requis.');
+      return;
+    }
+
+    setSaving(true);
+    setApiError('');
+
+    try {
+      await updateResource(Number(id), {
+        titre:       formData.titre,
+        description: formData.description,
+        contenu:     formData.contenu,
+        type:        formData.type,
+        visibilite:  formData.visibilite,
+        categoryId:  Number(formData.categoryId),
+        statut:      'en attente',
+        lien:        formData.lien || undefined,
+      });
+
+      setSuccessMessage('Ressource mise à jour. Elle doit être re-validée par un administrateur avant publication.');
+      setTimeout(() => router.push('/dashboard'), 3000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erreur lors de la mise à jour.';
+      setApiError(msg);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <PageHeader title="Éditer une Ressource" description="Chargement..." showBackButton={true} />
+        <main className="grow flex items-center justify-center">
+          <div className="text-content-muted text-sm animate-pulse">Chargement de la ressource...</div>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <PageHeader title="Éditer une Ressource" description="" showBackButton={true} />
+        <main className="grow flex flex-col items-center justify-center gap-4">
+          <p className="text-content font-semibold">Ressource introuvable.</p>
+          <Link href="/dashboard" className="text-primary text-sm font-semibold hover:underline">
+            Retour au tableau de bord
+          </Link>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
@@ -49,54 +147,74 @@ export default function EditRessourcePage() {
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
 
-            {saved && (
-              <div className="bg-green-50 border border-green-100 rounded-2xl shadow-sm p-4">
-                <p className="text-green-800 text-sm font-medium">✅ Ressource mise à jour !</p>
+            {successMessage && (
+              <div className="bg-green-50 border border-green-100 rounded-2xl p-4">
+                <p className="text-green-800 text-sm font-medium">{successMessage}</p>
+                <p className="text-green-700 text-xs mt-1">Redirection...</p>
+              </div>
+            )}
+
+            {apiError && (
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-4">
+                <p className="text-red-800 text-sm font-medium">{apiError}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
+
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-xs font-semibold text-gray-600">Titre *</Label>
+                <Label htmlFor="titre" className="text-xs font-semibold text-gray-600">Titre *</Label>
                 <Input
                   type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
+                  id="titre"
+                  name="titre"
+                  value={formData.titre}
                   onChange={handleChange}
-                  placeholder="Ex: Guide pratique sur..."
+                  placeholder="Titre de la ressource..."
                   className="h-11 rounded-xl border-gray-200 bg-gray-50/50 focus-visible:ring-1 focus-visible:ring-primary/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-semibold text-gray-600">Description *</Label>
+                <Label htmlFor="description" className="text-xs font-semibold text-gray-600">Description courte *</Label>
                 <textarea
                   id="description"
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Décrivez votre ressource..."
-                  rows={5}
-                  className="w-full border border-gray-200 rounded-xl bg-gray-50/50 px-4 py-3 resize-none outline-none focus:ring-1 focus:ring-primary/20"
+                  placeholder="Résumé visible dans les listes..."
+                  rows={3}
+                  className="w-full border border-gray-200 rounded-xl bg-gray-50/50 px-4 py-3 resize-none outline-none focus:ring-1 focus:ring-primary/20 text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contenu" className="text-xs font-semibold text-gray-600">Contenu complet</Label>
+                <textarea
+                  id="contenu"
+                  name="contenu"
+                  value={formData.contenu}
+                  onChange={handleChange}
+                  placeholder="Contenu détaillé..."
+                  rows={6}
+                  className="w-full border border-gray-200 rounded-xl bg-gray-50/50 px-4 py-3 resize-none outline-none focus:ring-1 focus:ring-primary/20 text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category" className="text-xs font-semibold text-gray-600">Catégorie *</Label>
+                  <Label htmlFor="categoryId" className="text-xs font-semibold text-gray-600">Catégorie *</Label>
                   <select
-                    id="category"
-                    name="category"
-                    value={formData.category}
+                    id="categoryId"
+                    name="categoryId"
+                    value={formData.categoryId}
                     onChange={handleChange}
                     className="w-full h-11 border border-gray-200 rounded-xl bg-gray-50/50 px-4 text-sm outline-none focus:ring-1 focus:ring-primary/20"
                   >
-                    <option value="Éducation">Éducation</option>
-                    <option value="Bien-être">Bien-être</option>
-                    <option value="Santé">Santé</option>
-                    <option value="Travail">Travail</option>
-                    <option value="Administratif">Administratif</option>
+                    <option value="">Sélectionner...</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -109,95 +227,79 @@ export default function EditRessourcePage() {
                     onChange={handleChange}
                     className="w-full h-11 border border-gray-200 rounded-xl bg-gray-50/50 px-4 text-sm outline-none focus:ring-1 focus:ring-primary/20"
                   >
-                    <option value="article">Article</option>
-                    <option value="video">Vidéo</option>
-                    <option value="pdf">PDF</option>
-                    <option value="audio">Podcast</option>
-                    <option value="link">Lien web</option>
+                    <option value="">Sélectionner...</option>
+                    {TYPES.map(t => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
                   </select>
                 </div>
               </div>
 
-              {formData.type === 'link' && (
+              {formData.type === 'lien' && (
                 <div className="space-y-2">
-                  <Label htmlFor="url" className="text-xs font-semibold text-gray-600">URL *</Label>
+                  <Label htmlFor="lien" className="text-xs font-semibold text-gray-600">URL *</Label>
                   <Input
                     type="url"
-                    id="url"
-                    name="url"
-                    value={formData.url}
+                    id="lien"
+                    name="lien"
+                    value={formData.lien}
                     onChange={handleChange}
                     placeholder="https://..."
+                    className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50"
                   />
                 </div>
               )}
 
               <div className="space-y-3 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
-                <Label className="text-xs font-semibold text-gray-600 block">Niveau de visibilité *</Label>
+                <Label className="text-xs font-semibold text-gray-600 block">Niveau de visibilité</Label>
                 <div className="space-y-2">
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="radio"
-                      id="public"
-                      name="visibility"
-                      value="public"
-                      checked={formData.visibility === 'public'}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <Label htmlFor="public" className="text-xs font-semibold cursor-pointer">Publique</Label>
-                      <p className="text-xs text-content-muted">Visible à tous après validation</p>
+                  {[
+                    { value: 'public',  label: 'Publique',  desc: 'Visible à tous après re-validation' },
+                    { value: 'partage', label: 'Partagée',  desc: 'Accessible uniquement via un lien privé' },
+                    { value: 'private', label: 'Privée',    desc: 'Visible uniquement par vous' },
+                  ].map(opt => (
+                    <div key={opt.value} className="flex items-start gap-3">
+                      <input
+                        type="radio"
+                        id={`vis-${opt.value}`}
+                        name="visibilite"
+                        value={opt.value}
+                        checked={formData.visibilite === opt.value}
+                        onChange={handleChange}
+                        className="mt-1"
+                      />
+                      <div>
+                        <Label htmlFor={`vis-${opt.value}`} className="text-xs font-semibold cursor-pointer">{opt.label}</Label>
+                        <p className="text-xs text-content-muted">{opt.desc}</p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="radio"
-                      id="shared"
-                      name="visibility"
-                      value="shared"
-                      checked={formData.visibility === 'shared'}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <Label htmlFor="shared" className="text-xs font-semibold cursor-pointer">Partagée</Label>
-                      <p className="text-xs text-content-muted">Par invitation uniquement</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="radio"
-                      id="private"
-                      name="visibility"
-                      value="private"
-                      checked={formData.visibility === 'private'}
-                      onChange={handleChange}
-                      className="mt-1"
-                    />
-                    <div>
-                      <Label htmlFor="private" className="text-xs font-semibold cursor-pointer">Privée</Label>
-                      <p className="text-xs text-content-muted">Visible uniquement par vous</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
+              </div>
+
+              {/* Info re-validation */}
+              <div className="flex items-center gap-3 p-4 bg-yellow-50/70 rounded-2xl border border-yellow-100">
+                <div className="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0" />
+                <p className="text-xs text-yellow-800 leading-relaxed">
+                  Toute modification repassera la ressource <strong>en attente de validation</strong> administrateur.
+                </p>
               </div>
 
               <div className="flex gap-3 pt-4">
                 <Button
                   type="submit"
-                  className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-11 rounded-xl text-base"
+                  disabled={saving || !!successMessage}
+                  className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold px-8 h-11 rounded-xl text-base disabled:opacity-50"
                 >
-                  Enregistrer les changements
+                  {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   className="flex-1 bg-white text-content border-gray-200 hover:bg-gray-50 font-semibold px-8 h-11 rounded-xl text-base"
+                  asChild
                 >
-                  <Link href="/dashboard" className="w-full">Annuler</Link>
+                  <Link href="/dashboard">Annuler</Link>
                 </Button>
               </div>
             </form>
@@ -209,4 +311,3 @@ export default function EditRessourcePage() {
     </div>
   );
 }
-
