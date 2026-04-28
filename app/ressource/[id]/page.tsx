@@ -7,153 +7,278 @@ import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { ResourceComments } from '@/components/shared/ResourceComments';
 import Link from 'next/link';
-import { Heart, Share2, AlertCircle, Calendar } from 'lucide-react';
+import { Heart, Share2, Calendar, User, Tag, ExternalLink, AlertCircle } from 'lucide-react';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+interface Resource {
+  id: number;
+  titre: string;
+  description: string;
+  contenu: string | null;
+  type: string;
+  type_ressource: string;
+  statut: string;
+  visibilite: string;
+  created_at: string | null;
+  dateCreation: string | null;
+  createur: string | null;
+  category: string | null;
+  categoryId: number | null;
+  lien: string | null;
+  media: string | null;
+}
+
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('jwt_token') || localStorage.getItem('auth_token');
+}
+
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  try {
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function typeLabel(type: string): string {
+  const map: Record<string, string> = {
+    article: 'Article',
+    video: 'Vidéo',
+    podcast: 'Podcast',
+    activite: 'Activité',
+    jeu: 'Jeu',
+  };
+  return map[type?.toLowerCase()] ?? type ?? 'Ressource';
+}
 
 export default function RessourceDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = React.use(props.params);
+  const [resource, setResource] = useState<Resource | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt_token') || localStorage.getItem('auth_token');
-    setIsAuthenticated(!!token);
+    setIsAuthenticated(!!getToken());
   }, []);
 
-  // Mock data - in real app, fetch from API based on params.id
-  const resource = {
-    id: parseInt(params.id),
-    type: "video",
-    title: "Comprendre la parentalité positive en 10 minutes",
-    description: "Une exploration visuelle des concepts clés de la parentalité bienveillante, avec des conseils pratiques pour le quotidien.",
-    fullContent: `
-      La parentalité positive est une approche qui se concentre sur le bien-être global de l&apos;enfant et de la famille. 
-      Elle favorise le dialogue, l&apos;écoute et le respect mutuel.
+  useEffect(() => {
+    const fetchResource = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = getToken();
+        const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      Cette ressource vous permettra de découvrir :
-      - Les principes fondamentaux de la parentalité bienveillante
-      - Comment gérer les conflits de manière constructive
-      - Les techniques de communication efficaces avec vos enfants
-      - Des conseils pratiques adaptés à chaque âge
-    `,
-    imageUrl: "https://images.unsplash.com/photo-1536640712247-c45474762ef4?auto=format&fit=crop&q=80&w=1200",
-    category: "Éducation",
-    duration: "10:24",
-    author: "Ministère de la Santé",
-    createdAt: "2024-01-15",
-    views: 2450,
-    rating: 4.8,
-    reviews: 128,
-    isNew: true,
-    tags: ["parentalité", "enfants", "communication", "bienveillance"],
-    relatedResources: [
-      {
-        id: 1,
-        title: "Ateliers pratiques : Méditation en famille",
-        category: "Bien-être",
-        type: "video"
-      },
-      {
-        id: 2,
-        title: "Guide complet de la communication non-violente",
-        category: "Communication",
-        type: "pdf"
-      },
-      {
-        id: 3,
-        title: "Podcast : Écouter ses enfants sans juger",
-        category: "Podcast",
-        type: "audio"
+        const res = await fetch(`${API_BASE}/resources/${params.id}`, { headers });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || `Erreur ${res.status}`);
+        }
+        const data: Resource = await res.json();
+        setResource(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      } finally {
+        setLoading(false);
       }
-    ]
-  };
+    };
+
+    fetchResource();
+  }, [params.id]);
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: resource.title,
-        text: resource.description,
+        title: resource?.titre ?? '',
+        text: resource?.description ?? '',
         url: window.location.href,
       });
     } else {
-      alert('Lien copié : ' + window.location.href);
+      navigator.clipboard?.writeText(window.location.href);
+      alert('Lien copié dans le presse-papiers');
     }
   };
+
+  const handleFavorite = async () => {
+    if (!isAuthenticated || !resource) return;
+    const token = getToken();
+    try {
+      await fetch(`${API_BASE}/resources/${resource.id}/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsFavorite(true);
+    } catch {
+      // silently ignore
+    }
+  };
+
+  // ── Loading state ──
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <main className="grow flex items-center justify-center">
+          <div className="text-center space-y-3">
+            <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+            <p className="text-content-muted text-sm">Chargement de la ressource…</p>
+          </div>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
+
+  // ── Error state ──
+  if (error || !resource) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+        <MainHeader />
+        <main className="grow flex items-center justify-center px-4">
+          <div className="text-center space-y-4 max-w-sm">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
+            <h1 className="text-xl font-bold text-content">Ressource introuvable</h1>
+            <p className="text-content-muted text-sm">{error ?? 'Cette ressource n\'existe pas ou n\'est plus disponible.'}</p>
+            <Link href="/catalogue">
+              <Button className="bg-primary text-white hover:bg-primary-700 rounded-xl">
+                Retour au catalogue
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <MainFooter />
+      </div>
+    );
+  }
+
+  const type = resource.type_ressource || resource.type || 'article';
+  const dateStr = resource.created_at || resource.dateCreation;
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
       <MainHeader />
 
       <PageHeader
-        title={resource.title}
-        description={resource.category}
+        title={resource.titre}
+        description={resource.category ?? undefined}
         showBackButton={true}
         compact={true}
         actions={
           <Button
-            onClick={() => setIsFavorite(!isFavorite)}
+            onClick={handleFavorite}
             size="sm"
             className={`flex items-center gap-1 h-8 px-3 rounded-xl font-semibold text-xs transition-all ${
-              isFavorite ? 'bg-red-50 text-red-600 border-red-100' : 'bg-white text-content border-gray-200 hover:bg-gray-50'
+              isFavorite
+                ? 'bg-red-50 text-red-600 border-red-100'
+                : 'bg-white text-content border-gray-200 hover:bg-gray-50'
             } border`}
+            title={isAuthenticated ? (isFavorite ? 'Sauvegardé' : 'Sauvegarder') : 'Connectez-vous pour sauvegarder'}
           >
-            <Heart size={14} fill={isFavorite ? "currentColor" : "none"} />
+            <Heart size={14} fill={isFavorite ? 'currentColor' : 'none'} />
           </Button>
         }
       />
 
       <main className="grow">
-        {/* Content */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
 
-          {/* Badge & Title */}
+          {/* Carte principale */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 mb-8">
+
+            {/* Badges */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-block px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
-                {resource.category}
-              </span>
+              {resource.category && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
+                  <Tag size={10} />
+                  {resource.category}
+                </span>
+              )}
               <span className="inline-block px-2 py-0.5 bg-secondary/10 text-secondary rounded-full text-xs font-semibold">
-                {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                {typeLabel(type)}
               </span>
-              {resource.isNew && (
+              {resource.statut === 'publie' && (
                 <span className="inline-block px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                  Nouveau
+                  Publié
                 </span>
               )}
             </div>
 
+            {/* Titre */}
             <h1 className="text-2xl sm:text-3xl font-bold text-content leading-tight">
-              {resource.title}
+              {resource.titre}
             </h1>
 
+            {/* Description */}
             <p className="text-content-muted text-base">
               {resource.description}
             </p>
 
-            {/* Meta Info */}
+            {/* Méta */}
             <div className="flex flex-wrap gap-4 pt-3 text-xs text-content-muted border-t border-gray-100">
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-content">Auteur :</span>
-                {resource.author}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-content">Durée :</span>
-                {resource.duration}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-content">Vues :</span>
-                {resource.views.toLocaleString()}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-content">⭐ {resource.rating}</span>
-                ({resource.reviews} avis)
-              </div>
+              {resource.createur && (
+                <div className="flex items-center gap-1">
+                  <User size={12} />
+                  <span className="font-semibold text-content">Auteur :</span>
+                  {resource.createur}
+                </div>
+              )}
+              {dateStr && (
+                <div className="flex items-center gap-1">
+                  <Calendar size={12} />
+                  <span className="font-semibold text-content">Publié le :</span>
+                  {formatDate(dateStr)}
+                </div>
+              )}
             </div>
 
             {/* Actions */}
             <div className="flex gap-2 pt-3 border-t border-gray-100">
-              <Button className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all">
-                Consulter
-              </Button>
+              {resource.lien ? (
+                <a
+                  href={resource.lien}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all flex items-center gap-2 justify-center">
+                    <ExternalLink size={15} />
+                    Consulter
+                  </Button>
+                </a>
+              ) : resource.media ? (
+                <a
+                  href={`${API_BASE.replace('/api', '')}/uploads/resources/${resource.media}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all flex items-center gap-2 justify-center">
+                    <ExternalLink size={15} />
+                    Consulter le média
+                  </Button>
+                </a>
+              ) : (
+                <Button
+                  disabled
+                  className="flex-1 bg-gray-100 text-gray-400 shadow-none font-semibold h-10 rounded-xl text-sm cursor-not-allowed"
+                >
+                  Aucun lien disponible
+                </Button>
+              )}
+
               <Button
                 variant="outline"
                 onClick={handleShare}
@@ -165,60 +290,25 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             </div>
           </div>
 
-          {/* Content Grid */}
+          {/* Grille contenu + sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Main Content - 2 colonnes */}
+            {/* Contenu principal */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Description complète */}
-              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h2 className="text-lg font-bold text-content mb-3">À propos</h2>
-                <div className="text-content-muted text-sm leading-relaxed whitespace-pre-line">
-                  {resource.fullContent}
-                </div>
-              </section>
 
-              {/* Tags */}
-              <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h3 className="text-sm font-bold text-content mb-3">Mots-clés</h3>
-                <div className="flex flex-wrap gap-2">
-                  {resource.tags.map((tag, idx) => (
-                    <span key={idx} className="px-2.5 py-1 bg-gray-100/70 rounded-full text-xs font-medium text-content-muted hover:bg-gray-200/70 cursor-pointer transition-colors">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </section>
+              {/* À propos — contenu réel de la BDD */}
+              {resource.contenu && (
+                <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                  <h2 className="text-lg font-bold text-content mb-3">À propos</h2>
+                  <div className="text-content-muted text-sm leading-relaxed whitespace-pre-line">
+                    {resource.contenu}
+                  </div>
+                </section>
+              )}
 
-              {/* Related Resources */}
-              <section className="space-y-3">
-                <h2 className="text-lg font-bold text-content">Ressources connexes</h2>
-                <div className="space-y-2">
-                  {resource.relatedResources.map((related) => (
-                    <Link
-                      key={related.id}
-                      href={`/ressource/${related.id}`}
-                      className="block p-3 bg-white rounded-xl border border-gray-100 hover:border-primary/20 hover:shadow-sm transition-all"
-                    >
-                      <div className="flex justify-between items-start gap-3">
-                        <div className="min-w-0">
-                          <h4 className="font-semibold text-content text-sm hover:text-primary transition-colors">
-                            {related.title}
-                          </h4>
-                          <p className="text-xs text-content-muted mt-1">
-                            {related.category} • {related.type}
-                          </p>
-                        </div>
-                        <span className="text-primary text-sm shrink-0">→</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-
-              {/* Reviews/Ratings Section */}
+              {/* Commentaires */}
               <section className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                <h2 className="text-lg font-bold text-content mb-4">Avis</h2>
+                <h2 className="text-lg font-bold text-content mb-4">Commentaires</h2>
                 <ResourceComments
                   resourceId={resource.id}
                   isAuthenticated={isAuthenticated}
@@ -229,46 +319,73 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
             {/* Sidebar */}
             <div className="space-y-4">
 
-              {/* Info Card */}
+              {/* Infos */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-                <h3 className="font-bold text-content text-sm">Infos</h3>
-
+                <h3 className="font-bold text-content text-sm">Informations</h3>
                 <div className="space-y-2 text-xs">
+
+                  {dateStr && (
+                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                      <Calendar className="w-4 h-4 text-primary shrink-0" />
+                      <div>
+                        <p className="text-content-subtle">Date de publication</p>
+                        <p className="text-content font-medium">{formatDate(dateStr)}</p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                    <Calendar className="w-4 h-4 text-primary shrink-0" />
+                    <span className="w-4 h-4 text-primary shrink-0 flex items-center justify-center text-xs">📄</span>
                     <div>
-                      <p className="text-content-subtle">Publié</p>
-                      <p className="text-content font-medium">{new Date(resource.createdAt).toLocaleDateString('fr-FR')}</p>
+                      <p className="text-content-subtle">Type</p>
+                      <p className="text-content font-medium capitalize">{typeLabel(type)}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-primary shrink-0" />
-                    <div>
-                      <p className="text-content-subtle text-xs">Type</p>
-                      <p className="text-content font-medium text-xs capitalize">{resource.type}</p>
+                  {resource.category && (
+                    <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+                      <Tag className="w-4 h-4 text-primary shrink-0" />
+                      <div>
+                        <p className="text-content-subtle">Catégorie</p>
+                        <p className="text-content font-medium">{resource.category}</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {resource.createur && (
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-primary shrink-0" />
+                      <div>
+                        <p className="text-content-subtle">Auteur</p>
+                        <p className="text-content font-medium">{resource.createur}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Accessibility Info */}
+              {/* Accessibilité */}
               <div className="bg-blue-50/70 p-3 rounded-2xl border border-blue-100 shadow-sm space-y-2">
                 <h3 className="font-bold text-blue-900 text-xs">♿ Accessible</h3>
                 <p className="text-xs text-blue-800 leading-relaxed">
-                  Norme RGAA - sous-titres disponibles
+                  Norme RGAA — sous-titres disponibles si applicable
                 </p>
                 <Link href="/declaration-accessibilite" className="text-blue-600 text-xs font-semibold hover:underline">
                   Plus d&apos;infos →
                 </Link>
               </div>
 
-              {/* Report Issue */}
+              {/* Signaler */}
               <div className="bg-yellow-50 p-3 rounded-2xl border border-yellow-100 shadow-sm">
-                <p className="text-xs text-yellow-900 font-medium mb-2">Problème d&apos;accès?</p>
-                <Button variant="outline" className="w-full bg-white text-yellow-900 border-yellow-100 hover:bg-yellow-100 text-xs font-semibold h-8 rounded-xl">
-                  Signaler
-                </Button>
+                <p className="text-xs text-yellow-900 font-medium mb-2">Problème d&apos;accès ?</p>
+                <Link href="/contact">
+                  <Button
+                    variant="outline"
+                    className="w-full bg-white text-yellow-900 border-yellow-100 hover:bg-yellow-100 text-xs font-semibold h-8 rounded-xl"
+                  >
+                    Signaler
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -279,4 +396,3 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
     </div>
   );
 }
-

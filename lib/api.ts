@@ -262,6 +262,9 @@ export interface ApiResource {
   datePublication?: string;
   createur: string;
   category?: string;
+  categoryId?: number;
+  lien?: string;
+  media?: string;
   views?: number;
   rating?: number;
   reviews?: number;
@@ -319,6 +322,8 @@ export interface CreateResourcePayload {
   type: string;
   visibilite: string;
   categoryId: number;
+  statut?: string;
+  lien?: string;
 }
 
 export async function createResource(
@@ -336,6 +341,16 @@ export async function updateResource(
 
 export async function deleteResource(id: number): Promise<{ message: string }> {
   return api.delete(`/resources/${id}`);
+}
+
+export async function getAdminResources(): Promise<ApiResource[]> {
+  try {
+    const response = await api.get<unknown>('/resources/admin');
+    return extractArrayData<ApiResource>(response);
+  } catch (error) {
+    console.error('Failed to fetch admin resources:', error);
+    return [];
+  }
 }
 
 export interface ResourceComment {
