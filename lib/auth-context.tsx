@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user is authenticated on mount
+
     const checkAuthentication = async () => {
       try {
         if (checkAuth()) {
@@ -85,7 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response && response.user) {
         setUser(response.user);
-        // Store user data in localStorage
         localStorage.setItem('user', JSON.stringify(response.user));
         return true;
       }
@@ -93,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
       setError(message);
-      return false;
+      throw err; // re-throw so callers can display the exact error message
     } finally {
       setLoading(false);
     }

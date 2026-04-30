@@ -81,16 +81,6 @@ class ApiClient {
     this.token = token;
 
     try {
-      // Debug logging
-      console.log(`[API] ${options.method || 'GET'} ${url}`);
-      if (!includeAuth) {
-        console.log('[API] Requete publique sans Authorization');
-      } else if (token) {
-        console.log(`[API] Token présent: ${token.substring(0, 20)}...`);
-      } else {
-        console.warn(`[API] Aucun token trouvé - requête non authentifiée`);
-      }
-
       const response = await fetch(url, {
         ...options,
         headers: {
@@ -99,56 +89,41 @@ class ApiClient {
         },
       });
 
-      // Handle non-JSON responses
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
 
-      // Si la réponse n'est pas OK et n'est pas JSON, c'est probablement une page d'erreur HTML
       if (!response.ok && !isJson) {
-        console.error(`[API] HTTP ${response.status}: Réponse non-JSON reçue (${contentType})`);
-
         if (response.status === 401) {
-          console.error(`[API] Authentification requise - Token manquant ou invalide`);
-          // Nettoyer le token expiré
           this.clearToken();
           throw new Error(`Authentification requise - Veuillez vous connecter`);
         }
-
         if (response.status === 403) {
           throw new Error(`Accès refusé - Vous n'avez pas les droits nécessaires`);
         }
-
         if (response.status === 500) {
-          console.error(`[API] Erreur serveur 500`);
           throw new Error(`Erreur serveur - Veuillez réessayer ultérieurement`);
         }
-
-        const text = await response.text();
-        console.error(`[API] Response text:`, text.substring(0, 500));
+        await response.text();
         throw new Error(`Erreur serveur ${response.status}: ${response.statusText}`);
       }
 
       if (!isJson) {
-        console.error(`[API] Invalid content-type: ${contentType}`);
         throw new Error(`Format invalide - JSON attendu, reçu: ${contentType}`);
       }
 
       const data = await response.json();
 
       if (!response.ok) {
-        console.error(`[API] HTTP ${response.status}:`, data);
         if (response.status === 401) {
           this.clearToken();
         }
 
-        // Extract error message with fallback
         let errorMessage = '';
         if (data.error) {
           errorMessage = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
         } else if (data.message) {
           errorMessage = typeof data.message === 'string' ? data.message : JSON.stringify(data.message);
         } else if (data.errors && typeof data.errors === 'object') {
-          // Handle validation errors like {"errors": {"email": ["Email already used"]}}
           const errorEntries = Object.entries(data.errors);
           if (errorEntries.length > 0) {
             const [, messages] = errorEntries[0];
@@ -160,7 +135,6 @@ class ApiClient {
           }
         }
 
-        // Fallback error message based on status code
         if (!errorMessage) {
           const statusMessages: Record<number, string> = {
             400: 'Requête invalide - Veuillez vérifier vos données',
@@ -178,13 +152,9 @@ class ApiClient {
         throw new Error(errorMessage);
       }
 
-      console.log(`[API] Success (${response.status}):`, data);
       return data;
     } catch (error) {
-      console.error(`API Error [${endpoint}]:`, error);
-      // Re-throw without adding extra context if it's already an API error
       if (error instanceof Error) {
-        // Don't wrap if it's already from our error handling
         throw error;
       }
       throw error;
@@ -299,10 +269,8 @@ export async function getResources(params?: {
     if (resources.length > 0) {
       return resources;
     }
-    console.warn('Unexpected API response format:', response);
     return [];
-  } catch (error) {
-    console.error('Failed to fetch resources:', error);
+  } catch {
     return [];
   }
 }
@@ -310,8 +278,7 @@ export async function getResources(params?: {
 export async function getResourceById(id: string | number): Promise<ApiResource | null> {
   try {
     return await api.get<ApiResource>(`/resources/${id}`);
-  } catch (error) {
-    console.error(`Failed to fetch resource ${id}:`, error);
+  } catch {
     return null;
   }
 }
@@ -319,8 +286,7 @@ export async function getResourceById(id: string | number): Promise<ApiResource 
 export async function getResourceByShareToken(token: string): Promise<ApiResource | null> {
   try {
     return await api.get<ApiResource>(`/resources/share/${token}`, { includeAuth: false });
-  } catch (error) {
-    console.error(`Failed to fetch shared resource:`, error);
+  } catch {
     return null;
   }
 }
@@ -357,8 +323,7 @@ export async function getMyResources(): Promise<ApiResource[]> {
   try {
     const response = await api.get<unknown>('/resources/mine');
     return extractArrayData<ApiResource>(response);
-  } catch (error) {
-    console.error('Failed to fetch user resources:', error);
+  } catch {
     return [];
   }
 }
@@ -367,8 +332,7 @@ export async function getAdminResources(): Promise<ApiResource[]> {
   try {
     const response = await api.get<unknown>('/resources/admin');
     return extractArrayData<ApiResource>(response);
-  } catch (error) {
-    console.error('Failed to fetch admin resources:', error);
+  } catch {
     return [];
   }
 }
@@ -425,8 +389,7 @@ export async function getCategories(): Promise<ApiCategory[]> {
   try {
     const response = await api.get<unknown>('/categories');
     return extractArrayData<ApiCategory>(response);
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
+  } catch {
     return [];
   }
 }
@@ -462,8 +425,7 @@ export interface PendingResource {
 export async function getPendingResources(): Promise<PendingResource[]> {
   try {
     return await api.get<PendingResource[]>('/moderation/pending');
-  } catch (error) {
-    console.error('Failed to fetch pending resources:', error);
+  } catch {
     return [];
   }
 }
@@ -543,6 +505,10 @@ export interface CurrentUserResponse {
   name?: string;
   role?: string;
   roles?: string[];
+  joinDate?: string;
+  resourcesCreated?: number;
+  resourcesSaved?: number;
+  avgRating?: number | null;
 }
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
@@ -555,7 +521,6 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     }
     return response;
   } catch (error) {
-    console.error('Login failed:', error);
     throw error;
   }
 }
@@ -570,7 +535,6 @@ export async function register(payload: RegisterPayload): Promise<RegisterRespon
     }
     return response;
   } catch (error) {
-    console.error('Registration failed:', error);
     throw error;
   }
 }
@@ -610,8 +574,8 @@ export async function getCurrentUser(): Promise<CurrentUserResponse> {
 export async function logout(): Promise<void> {
   try {
     await api.post<{ message: string }>('/logout', {});
-  } catch (error) {
-    console.warn('Logout request failed, clearing local session anyway:', error);
+  } catch {
+    // logout fails silently — local session is cleared anyway
   } finally {
     api.clearToken();
   }
@@ -658,8 +622,7 @@ export async function getUsers(params?: {
     const endpoint = query ? `/users?${query}` : '/users';
 
     return await api.get<UsersListResponse>(endpoint);
-  } catch (error) {
-    console.error('Failed to fetch users:', error);
+  } catch {
     return { data: [], pagination: { total: 0, page: 1, limit: 50, pages: 0 } };
   }
 }

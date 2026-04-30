@@ -14,7 +14,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function ConnexionPage() {
   const router = useRouter();
-  const { login, error: authError } = useAuth();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -45,12 +45,7 @@ export default function ConnexionPage() {
     setLoading(true);
 
     try {
-      const success = await login(formData.email, formData.password);
-      if (!success) {
-        setErrorMessage(authError || 'Connexion impossible.');
-        return;
-      }
-
+      await login(formData.email, formData.password);
       setLoggedIn(true);
       router.push('/catalogue');
       router.refresh();

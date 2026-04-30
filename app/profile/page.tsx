@@ -10,12 +10,26 @@ import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin, Calendar, Edit2, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { getCurrentUser } from '@/lib/api';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, loading, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    bio: string;
+    role: string;
+    joinDate: string;
+    resourcesCreated: number;
+    resourcesSaved: number;
+    avgRating: number | null;
+    avatar: string;
+  }>({
     firstName: '',
     lastName: '',
     email: '',
@@ -26,7 +40,8 @@ export default function ProfilePage() {
     joinDate: '',
     resourcesCreated: 0,
     resourcesSaved: 0,
-    avatar: 'U'
+    avgRating: null,
+    avatar: 'U',
   });
 
   const [formData, setFormData] = useState(profile);
@@ -41,7 +56,15 @@ export default function ProfilePage() {
       return;
     }
 
-    const nextProfile = {
+    const displayName = user?.name || `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || user?.email || 'U';
+    const avatar = displayName
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('') || 'U';
+
+    const baseProfile = {
       firstName: user?.firstname || user?.name?.split(' ')[0] || 'Utilisateur',
       lastName: user?.lastname || user?.name?.split(' ').slice(1).join(' ') || '',
       email: user?.email || '',
@@ -52,16 +75,25 @@ export default function ProfilePage() {
       joinDate: '',
       resourcesCreated: 0,
       resourcesSaved: 0,
-      avatar: (user?.name || user?.email || 'U')
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase())
-        .join('') || 'U'
+      avgRating: null as number | null,
+      avatar,
     };
 
-    setProfile(nextProfile);
-    setFormData(nextProfile);
+    setProfile(baseProfile);
+    setFormData(baseProfile);
+
+    // Charger les stats depuis /api/me
+    getCurrentUser().then((me) => {
+      setProfile(prev => ({
+        ...prev,
+        joinDate: me.joinDate
+          ? new Date(me.joinDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+          : '',
+        resourcesCreated: me.resourcesCreated ?? 0,
+        resourcesSaved:   me.resourcesSaved   ?? 0,
+        avgRating:        me.avgRating         ?? null,
+      }));
+    }).catch(() => { /* silencieux */ });
   }, [isAuthenticated, loading, router, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -147,7 +179,9 @@ export default function ProfilePage() {
                 <p className="text-content-muted text-sm mt-2">Ressources enregistrées</p>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
-                <p className="text-3xl font-bold text-primary">4.8</p>
+                <p className="text-3xl font-bold text-primary">
+                  {profile.avgRating !== null ? profile.avgRating.toFixed(1) : '–'}
+                </p>
                 <p className="text-content-muted text-sm mt-2">Note moyenne</p>
               </div>
             </div>
