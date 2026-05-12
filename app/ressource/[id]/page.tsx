@@ -7,7 +7,9 @@ import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { ResourceComments } from '@/components/shared/ResourceComments';
 import Link from 'next/link';
-import { Heart, Share2, Calendar, User, Tag, ExternalLink, AlertCircle } from 'lucide-react';
+import { Heart, Share2, Calendar, User, Tag, ExternalLink, Download, Play, AlertCircle } from 'lucide-react';
+import { getMediaUrl } from '@/lib/api';
+import { downloadFromSupabase, isSupabaseUrl } from '@/lib/supabase';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -56,6 +58,101 @@ function typeLabel(type: string): string {
     jeu: 'Jeu',
   };
   return map[type?.toLowerCase()] ?? type ?? 'Ressource';
+}
+
+async function triggerDownload(mediaValue: string, fallbackName: string) {
+  const url = getMediaUrl(mediaValue);
+  const filename = fallbackName.split('/').pop() ?? fallbackName;
+
+  if (isSupabaseUrl(url)) {
+    await downloadFromSupabase(url, filename);
+  } else {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(url, '_blank');
+    }
+  }
+}
+
+function MediaButton({ resource }: { resource: Resource }) {
+  const type = (resource.type_ressource || resource.type || '').toLowerCase();
+  const media = resource.media;
+  const lien  = resource.lien;
+
+  // PDF → téléchargement JS (fetch → blob) sans quitter la page
+  if (type === 'pdf' && media) {
+    return (
+      <Button
+        onClick={() => triggerDownload(getMediaUrl(media), media)}
+        className="flex-1 bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm flex items-center gap-2 justify-center"
+      >
+        <Download size={15} />
+        Télécharger le PDF
+      </Button>
+    );
+  }
+
+  // Vidéo → ouvre la vidéo (media URL ou lien)
+  if (type === 'video') {
+    const url = media ? getMediaUrl(media) : lien;
+    if (url) return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex-1">
+        <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm flex items-center gap-2 justify-center">
+          <Play size={15} />
+          Regarder la vidéo
+        </Button>
+      </a>
+    );
+  }
+
+  // Podcast → ouvre le lien audio
+  if (type === 'podcast') {
+    const url = media ? getMediaUrl(media) : lien;
+    if (url) return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex-1">
+        <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm flex items-center gap-2 justify-center">
+          <Play size={15} />
+          Écouter le podcast
+        </Button>
+      </a>
+    );
+  }
+
+  // Lien web ou fallback lien
+  if (lien) return (
+    <a href={lien} target="_blank" rel="noopener noreferrer" className="flex-1">
+      <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm flex items-center gap-2 justify-center">
+        <ExternalLink size={15} />
+        Consulter
+      </Button>
+    </a>
+  );
+
+  // Média générique (article avec media URL, etc.)
+  if (media) return (
+    <a href={getMediaUrl(media)} target="_blank" rel="noopener noreferrer" className="flex-1">
+      <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm flex items-center gap-2 justify-center">
+        <ExternalLink size={15} />
+        Consulter le média
+      </Button>
+    </a>
+  );
+
+  return (
+    <Button disabled className="flex-1 bg-gray-100 text-gray-400 shadow-none font-semibold h-10 rounded-xl text-sm cursor-not-allowed">
+      Aucun lien disponible
+    </Button>
+  );
 }
 
 export default function RessourceDetailPage(props: { params: Promise<{ id: string }> }) {
@@ -246,38 +343,8 @@ export default function RessourceDetailPage(props: { params: Promise<{ id: strin
 
             {/* Actions */}
             <div className="flex gap-2 pt-3 border-t border-gray-100">
-              {resource.lien ? (
-                <a
-                  href={resource.lien}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1"
-                >
-                  <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all flex items-center gap-2 justify-center">
-                    <ExternalLink size={15} />
-                    Consulter
-                  </Button>
-                </a>
-              ) : resource.media ? (
-                <a
-                  href={`${API_BASE.replace('/api', '')}/uploads/resources/${resource.media}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1"
-                >
-                  <Button className="w-full bg-primary text-white hover:bg-primary-700 shadow-sm font-semibold h-10 rounded-xl text-sm transition-all flex items-center gap-2 justify-center">
-                    <ExternalLink size={15} />
-                    Consulter le média
-                  </Button>
-                </a>
-              ) : (
-                <Button
-                  disabled
-                  className="flex-1 bg-gray-100 text-gray-400 shadow-none font-semibold h-10 rounded-xl text-sm cursor-not-allowed"
-                >
-                  Aucun lien disponible
-                </Button>
-              )}
+              <MediaButton resource={resource} />
+
 
               <Button
                 variant="outline"

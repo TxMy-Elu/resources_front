@@ -131,11 +131,6 @@ export default function ConnexionPage() {
                 </div>
               </form>
             )}
-
-            <div className="bg-green-50 p-4 rounded-2xl border border-green-100 shadow-sm text-xs text-green-800">
-              <p className="font-semibold mb-1">Données de test</p>
-              <p>Utilisez un compte valide du backend configuré dans `NEXT_PUBLIC_API_URL`.</p>
-            </div>
           </div>
         </div>
       </main>

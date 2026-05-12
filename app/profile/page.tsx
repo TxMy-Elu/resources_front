@@ -7,7 +7,8 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Phone, MapPin, Calendar, Edit2, LogOut } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, LogOut } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { getCurrentUser } from '@/lib/api';
@@ -94,6 +95,7 @@ export default function ProfilePage() {
         avgRating:        me.avgRating         ?? null,
       }));
     }).catch(() => { /* silencieux */ });
+
   }, [isAuthenticated, loading, router, user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

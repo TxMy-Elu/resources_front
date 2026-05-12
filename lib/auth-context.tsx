@@ -25,7 +25,7 @@ interface AuthContextType {
 }
 
 const ADMIN_ROLES = ['Administrateur', 'Super-administrateur', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN'];
-const MODERATOR_ROLES = ['Modérateur', 'Administrateur', 'Super-administrateur', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MODERATEUR'];
+const MODERATOR_ROLES = ['Modérateur', 'Administrateur', 'Super-administrateur', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_MODERATOR'];
 const SUPER_ADMIN_ROLES = ['Super-administrateur', 'ROLE_SUPER_ADMIN'];
 
 function checkRole(user: User | null, allowed: string[]): boolean {

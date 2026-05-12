@@ -5,8 +5,9 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
-import { Eye, Edit2, Link2, Check } from 'lucide-react';
-import { getMyResources, ApiResource } from '@/lib/api';
+import { Eye, Edit2, Link2, Check, Heart, Tag, Download, ExternalLink } from 'lucide-react';
+import { getMyResources, getFavorites, ApiResource, FavoriteResource, getMediaUrl } from '@/lib/api';
+import { downloadFromSupabase, isSupabaseUrl } from '@/lib/supabase';
 import { RoleGuard } from '@/components/shared/RoleGuard';
 
 const STATUT_LABELS: Record<string, { label: string; classes: string }> = {
@@ -18,12 +19,13 @@ const STATUT_LABELS: Record<string, { label: string; classes: string }> = {
 
 export default function DashboardPage() {
   const [resources, setResources] = useState<ApiResource[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteResource[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   useEffect(() => {
-    getMyResources()
-      .then(setResources)
+    Promise.all([getMyResources(), getFavorites()])
+      .then(([res, favs]) => { setResources(res); setFavorites(favs); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -188,6 +190,85 @@ export default function DashboardPage() {
                       Les ressources <strong>partagées</strong> sont accessibles uniquement via leur lien privé.
                       Copiez le lien avec l&apos;icône <Link2 className="w-3 h-3 inline" /> et partagez-le aux personnes concernées.
                     </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Mes Favoris */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  <h2 className="text-2xl font-bold text-content">Mes Favoris</h2>
+                  <span className="ml-auto text-sm text-content-muted">
+                    {favorites.length} ressource{favorites.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                {favorites.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+                    <Heart className="w-10 h-10 mx-auto mb-3 text-gray-200" />
+                    <p className="text-content-muted text-sm">Aucune ressource en favori pour l&apos;instant.</p>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">
+                    {favorites.map(r => (
+                      <div key={r.id} className="flex items-start gap-4 p-4 hover:bg-gray-50/50 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <Link href={`/ressource/${r.id}`} className="font-semibold text-content hover:text-primary transition-colors truncate">
+                              {r.titre}
+                            </Link>
+                            {r.category && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-semibold shrink-0">
+                                <Tag className="w-2.5 h-2.5" />{r.category}
+                              </span>
+                            )}
+                            {r.type && (
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs capitalize shrink-0">
+                                {r.type}
+                              </span>
+                            )}
+                          </div>
+                          {r.description && (
+                            <p className="text-xs text-content-muted line-clamp-2">{r.description}</p>
+                          )}
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          {r.media && (
+                            <button
+                              onClick={async () => {
+                                const url = getMediaUrl(r.media!);
+                                const name = r.media!.split('/').pop() ?? r.media!;
+                                if (isSupabaseUrl(url)) await downloadFromSupabase(url, name);
+                                else window.open(url, '_blank');
+                              }}
+                              className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                              title="Télécharger"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          {r.lien && (
+                            <a
+                              href={r.lien}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                              title="Ouvrir le lien"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          <Link
+                            href={`/ressource/${r.id}`}
+                            className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                            title="Voir la ressource"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

@@ -9,20 +9,26 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import Link from 'next/link';
-import { createResource, getCategories, ApiCategory } from '@/lib/api';
+import { createResource } from '@/lib/api';
+import { useCategories } from '@/lib/hooks/useCategories';
+import { uploadMedia, validateFile } from '@/lib/supabase';
+import { RoleGuard } from '@/components/shared/RoleGuard';
 
 const TYPES = [
   { value: 'article',  label: 'Article'  },
   { value: 'video',    label: 'Vidéo'    },
   { value: 'podcast',  label: 'Podcast'  },
+  { value: 'pdf',      label: 'PDF'      },
   { value: 'activite', label: 'Activité' },
   { value: 'jeu',      label: 'Jeu'      },
   { value: 'lien',     label: 'Lien web' },
 ];
 
+const MEDIA_URL_TYPES = ['video', 'podcast'];
+
 export default function CreerRessourcePage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const { categories } = useCategories();
   const [formData, setFormData] = useState({
     titre: '',
     description: '',
@@ -31,20 +37,24 @@ export default function CreerRessourcePage() {
     type: '',
     visibilite: 'public',
     lien: '',
+    mediaUrl: '',
     consent: false,
   });
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [apiError, setApiError] = useState('');
 
-  useEffect(() => {
-    getCategories().then(setCategories);
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'type' ? { mediaUrl: '', lien: '' } : {}),
+    }));
+    if (name === 'type') setMediaFile(null);
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
@@ -57,6 +67,7 @@ export default function CreerRessourcePage() {
     if (!formData.categoryId) newErrors.categoryId = 'La catégorie est requise';
     if (!formData.type) newErrors.type = 'Le type de ressource est requis';
     if (formData.type === 'lien' && !formData.lien) newErrors.lien = "L'URL est requise pour ce type";
+    if (formData.type === 'pdf' && !mediaFile) newErrors.mediaFile = 'Le fichier PDF est requis';
     if (!formData.consent) newErrors.consent = 'Vous devez accepter les conditions';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,6 +81,13 @@ export default function CreerRessourcePage() {
     setApiError('');
 
     try {
+      let mediaUrl = formData.mediaUrl || undefined;
+
+      // Upload PDF vers Supabase avant de créer la ressource
+      if (formData.type === 'pdf' && mediaFile) {
+        mediaUrl = await uploadMedia(mediaFile);
+      }
+
       await createResource({
         titre: formData.titre,
         description: formData.description,
@@ -79,6 +97,7 @@ export default function CreerRessourcePage() {
         categoryId: Number(formData.categoryId),
         statut: 'en attente',
         lien: formData.lien || undefined,
+        media: mediaUrl,
       });
 
       setSuccessMessage('Ressource soumise avec succès ! Elle sera visible après validation par un administrateur.');
@@ -90,8 +109,10 @@ export default function CreerRessourcePage() {
         type: '',
         visibilite: 'public',
         lien: '',
+        mediaUrl: '',
         consent: false,
       });
+      setMediaFile(null);
 
       setTimeout(() => router.push('/catalogue'), 3000);
     } catch (err: unknown) {
@@ -103,6 +124,7 @@ export default function CreerRessourcePage() {
   };
 
   return (
+    <RoleGuard required="authenticated">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col selection:bg-secondary/30 selection:text-primary-900">
       <MainHeader />
 
@@ -240,6 +262,60 @@ export default function CreerRessourcePage() {
                 </div>
               )}
 
+              {/* Média URL (vidéo / podcast) */}
+              {MEDIA_URL_TYPES.includes(formData.type) && (
+                <div className="space-y-2">
+                  <Label htmlFor="mediaUrl" className="text-xs font-semibold text-gray-600">
+                    Lien du média
+                  </Label>
+                  <Input
+                    type="url"
+                    id="mediaUrl"
+                    name="mediaUrl"
+                    value={formData.mediaUrl}
+                    onChange={handleChange}
+                    placeholder={formData.type === 'video' ? 'https://youtube.com/...' : 'https://...'}
+                    className="h-11 rounded-xl border-gray-200 focus-visible:ring-1 focus-visible:ring-primary/20 bg-gray-50/50 font-medium text-content"
+                  />
+                </div>
+              )}
+
+              {/* Upload PDF */}
+              {formData.type === 'pdf' && (
+                <div className="space-y-2">
+                  <Label htmlFor="mediaFile" className="text-xs font-semibold text-gray-600">
+                    Fichier PDF *
+                  </Label>
+                  <div className="border border-gray-200 rounded-xl bg-gray-50/50 px-4 py-3">
+                    <input
+                      type="file"
+                      id="mediaFile"
+                      accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.mp3,.ogg,.wav,.mp4,.webm"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        if (file) {
+                          const validationErr = validateFile(file);
+                          if (validationErr) {
+                            setErrors(prev => ({ ...prev, mediaFile: validationErr.message }));
+                            e.target.value = '';
+                            return;
+                          }
+                        }
+                        setMediaFile(file);
+                        setErrors(prev => ({ ...prev, mediaFile: '' }));
+                      }}
+                      className="w-full text-sm text-content-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                    />
+                    {mediaFile && (
+                      <p className="text-xs text-green-600 mt-1.5">
+                        {mediaFile.name} ({(mediaFile.size / 1024).toFixed(0)} Ko)
+                      </p>
+                    )}
+                  </div>
+                  {errors.mediaFile && <p className="text-red-500 text-xs">{errors.mediaFile}</p>}
+                </div>
+              )}
+
               {/* Visibilité */}
               <div className="space-y-3 p-4 bg-gray-50/70 rounded-xl border border-gray-100">
                 <Label className="text-xs font-semibold text-gray-600 block">Niveau de visibilité *</Label>
@@ -325,5 +401,6 @@ export default function CreerRessourcePage() {
 
       <MainFooter />
     </div>
+    </RoleGuard>
   );
 }

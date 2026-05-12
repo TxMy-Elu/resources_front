@@ -1,7 +1,14 @@
 // API Configuration and Client
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 const JWT_STORAGE_KEY = 'jwt_token';
 const LEGACY_JWT_STORAGE_KEY = 'auth_token';
+
+export function getMediaUrl(media: string | undefined | null): string {
+  if (!media) return '';
+  if (media.startsWith('http://') || media.startsWith('https://')) return media;
+  return `${API_BASE_URL}/resources/download/${media}`;
+}
 
 export interface ApiResponse<T> {
   data?: T;
@@ -176,6 +183,23 @@ class ApiClient {
     }, config);
   }
 
+  async postFile<T>(endpoint: string, payload: Record<string, unknown>, file: File): Promise<T> {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) formData.append(k, String(v));
+    });
+    formData.append('media', file);
+
+    const token = this.getStoredToken();
+    const headers: HeadersInit = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, { method: 'POST', headers, body: formData });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || data?.message || `Erreur ${response.status}`);
+    return data as T;
+  }
+
   async put<T>(
     endpoint: string,
     body: unknown,
@@ -300,11 +324,16 @@ export interface CreateResourcePayload {
   categoryId: number;
   statut?: string;
   lien?: string;
+  media?: string;
 }
 
 export async function createResource(
-  payload: CreateResourcePayload
+  payload: CreateResourcePayload,
+  mediaFile?: File
 ): Promise<{ id: number; message: string; statut: string }> {
+  if (mediaFile) {
+    return api.postFile('/resources', payload as unknown as Record<string, unknown>, mediaFile);
+  }
   return api.post('/resources', payload);
 }
 
@@ -377,12 +406,35 @@ export async function saveResource(
   return api.post(`/resources/${id}/save`, {});
 }
 
+export interface FavoriteResource {
+  id: number;
+  titre: string;
+  description?: string;
+  type?: string;
+  category?: string;
+  media?: string;
+  lien?: string;
+  statut?: string;
+  created_at?: string;
+}
+
+export async function getFavorites(): Promise<FavoriteResource[]> {
+  try {
+    const response = await api.get<unknown>('/resources/favorites');
+    return extractArrayData<FavoriteResource>(response);
+  } catch (e) {
+    console.error('[getFavorites]', e);
+    return [];
+  }
+}
+
 // ============ Categories API ============
 
 export interface ApiCategory {
   id: number;
   name: string;
   description: string;
+  count?: number; // nb de ressources liées (retourné par GET /api/categories)
 }
 
 export async function getCategories(): Promise<ApiCategory[]> {
@@ -418,6 +470,13 @@ export async function deleteCategory(id: number): Promise<{ message: string }> {
 export interface PendingResource {
   id: number;
   titre: string;
+  description?: string;
+  contenu?: string;
+  type?: string;
+  category?: string;
+  visibilite?: string;
+  lien?: string;
+  media?: string;
   createur: string;
   dateCreation: string;
 }
@@ -436,6 +495,23 @@ export async function validateResource(id: number): Promise<{ message: string }>
 
 export async function suspendResource(id: number): Promise<{ message: string }> {
   return api.post(`/moderation/suspend/${id}`, {});
+}
+
+export interface ModerationComment {
+  id: number;
+  content: string;
+  rating: number | null;
+  createdAt: string;
+  author: { id: number; name: string } | null;
+  resource: { id: number; titre: string } | null;
+}
+
+export async function getModerationComments(page = 1): Promise<{ data: ModerationComment[]; pagination: { total: number; pages: number; page: number; limit: number } }> {
+  return api.get(`/moderation/comments?page=${page}&limit=20`);
+}
+
+export async function deleteModerationComment(id: number): Promise<{ message: string }> {
+  return api.delete(`/moderation/comments/${id}`);
 }
 
 // ============ Authentication ============

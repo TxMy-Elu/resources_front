@@ -9,25 +9,22 @@ import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { getResources, getCategories, ApiResource, ApiCategory } from '@/lib/api';
+import { getResources, ApiResource } from '@/lib/api';
+import { useCategories } from '@/lib/hooks/useCategories';
 
 export default function CatalogPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
   const [resources, setResources] = useState<ApiResource[]>([]);
-  const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const { categories } = useCategories();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [apiResources, apiCategories] = await Promise.all([
-          getResources(),
-          getCategories(),
-        ]);
+        const apiResources = await getResources();
         setResources(apiResources);
-        setCategories(apiCategories);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {

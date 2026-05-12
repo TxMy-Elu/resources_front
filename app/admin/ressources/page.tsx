@@ -12,10 +12,11 @@ import {
   createResource,
   updateResource,
   deleteResource,
-  getCategories,
   ApiCategory,
   CreateResourcePayload,
+  getMediaUrl,
 } from '@/lib/api';
+import { useCategories } from '@/lib/hooks/useCategories';
 import { RoleGuard } from '@/components/shared/RoleGuard';
 
 /* ─── Types ─── */
@@ -82,7 +83,7 @@ export default function AdminResourcesPage() {
   const [filterStatus,    setFilterStatus]    = useState('all');
   const [filterCategory,  setFilterCategory]  = useState('all');
   const [resources,       setResources]       = useState<Res[]>([]);
-  const [categories,      setCategories]      = useState<ApiCategory[]>([]);
+  const { categories } = useCategories();
   const [loading,         setLoading]         = useState(true);
 
   // modals
@@ -108,10 +109,7 @@ export default function AdminResourcesPage() {
   useEffect(() => {
     (async () => {
       try {
-        const [apiResources, apiCategories] = await Promise.all([
-          getAdminResources(),
-          getCategories(),
-        ]);
+        const apiResources = await getAdminResources();
         setResources(apiResources.map(r => ({
           id:          r.id,
           title:       r.titre,
@@ -127,7 +125,6 @@ export default function AdminResourcesPage() {
           media:       r.media ?? '',
           date:        (r.created_at ?? '').split(' ')[0],
         })));
-        setCategories(apiCategories);
       } catch (e) {
         console.error(e);
       } finally {
@@ -235,6 +232,20 @@ export default function AdminResourcesPage() {
       showToast('Erreur lors de la sauvegarde', 'error');
     } finally {
       setSaving(false);
+    }
+  };
+
+  /* ─── Status change (approve / reject / suspend) ─── */
+
+  const handleStatusChange = async (id: number, apiStatut: string, label: string) => {
+    try {
+      await updateResource(id, { statut: apiStatut } as Partial<CreateResourcePayload>);
+      const newLabel = statusFromApi(apiStatut);
+      setResources(prev => prev.map(r => r.id === id ? { ...r, status: newLabel } : r));
+      if (viewRes?.id === id) setViewRes(prev => prev ? { ...prev, status: newLabel } : prev);
+      showToast(`Ressource ${label}`);
+    } catch {
+      showToast('Erreur lors du changement de statut', 'error');
     }
   };
 
@@ -467,8 +478,8 @@ export default function AdminResourcesPage() {
                 {/* Contenu */}
                 <div>
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Contenu</p>
-                  <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap font-mono max-h-64 overflow-y-auto border border-gray-100">
-                    {viewRes.contenu || <span className="text-gray-400 italic font-sans">Aucun contenu</span>}
+                  <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap border border-gray-100">
+                    {viewRes.contenu || <span className="text-gray-400 italic">Aucun contenu</span>}
                   </div>
                 </div>
 
@@ -476,29 +487,73 @@ export default function AdminResourcesPage() {
                 {viewRes.media && (
                   <div>
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Document joint</p>
-                    <div className="flex items-center gap-2 bg-blue-50 rounded-xl px-4 py-3">
+                    <a
+                      href={getMediaUrl(viewRes.media)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-blue-50 rounded-xl px-4 py-3 hover:bg-blue-100 transition-colors w-full"
+                    >
                       <FileText className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span className="text-sm text-blue-700 font-medium">{viewRes.media}</span>
-                    </div>
+                      <span className="text-sm text-blue-700 font-medium truncate">{viewRes.media}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-blue-400 shrink-0 ml-auto" />
+                    </a>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-100 px-6 py-4 flex gap-3 shrink-0 bg-gray-50/30 rounded-b-2xl">
+              <div className="border-t border-gray-100 px-6 py-4 flex gap-3 shrink-0 bg-gray-50/30 rounded-b-2xl flex-wrap">
                 <Button
                   onClick={() => setViewRes(null)}
                   variant="outline"
-                  className="flex-1 h-10 rounded-xl border-gray-200 hover:bg-gray-50"
+                  className="h-10 rounded-xl border-gray-200 hover:bg-gray-50 px-4"
                 >
                   Fermer
                 </Button>
                 <Button
                   onClick={() => { setViewRes(null); openEdit(viewRes); }}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-white h-10 rounded-xl transition-colors"
+                  variant="outline"
+                  className="h-10 rounded-xl border-gray-200 hover:bg-gray-50 px-4"
                 >
                   <Edit className="w-4 h-4 mr-1.5" /> Modifier
                 </Button>
+
+                {viewRes.status === 'En attente' && (
+                  <>
+                    <Button
+                      onClick={() => handleStatusChange(viewRes.id, 'brouillon', 'rejetée')}
+                      className="h-10 rounded-xl bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 px-4 ml-auto"
+                      variant="outline"
+                    >
+                      Rejeter
+                    </Button>
+                    <Button
+                      onClick={() => handleStatusChange(viewRes.id, 'publie', 'approuvée')}
+                      className="h-10 rounded-xl bg-green-600 hover:bg-green-700 text-white px-4"
+                    >
+                      Approuver
+                    </Button>
+                  </>
+                )}
+
+                {viewRes.status === 'Publié' && (
+                  <Button
+                    onClick={() => handleStatusChange(viewRes.id, 'suspendu', 'suspendue')}
+                    className="h-10 rounded-xl bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 px-4 ml-auto"
+                    variant="outline"
+                  >
+                    Suspendre
+                  </Button>
+                )}
+
+                {viewRes.status === 'Suspendu' && (
+                  <Button
+                    onClick={() => handleStatusChange(viewRes.id, 'publie', 'réactivée')}
+                    className="h-10 rounded-xl bg-green-600 hover:bg-green-700 text-white px-4 ml-auto"
+                  >
+                    Réactiver
+                  </Button>
+                )}
               </div>
             </div>
           </div>

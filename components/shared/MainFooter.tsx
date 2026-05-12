@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const MainFooter = () => {
   return (
@@ -10,10 +11,24 @@ export const MainFooter = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Logo & Info Section */}
           <div className="col-span-1 lg:col-span-1 space-y-6">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-primary-900 leading-none tracking-tighter uppercase italic">Liberté • Égalité • Fraternité</span>
-              <div className="h-0.5 w-12 bg-primary-600 my-0.5" />
-              <span className="text-sm font-extrabold text-primary tracking-tight">RÉPUBLIQUE FRANÇAISE</span>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo-gouvernement.svg"
+                alt="République Française"
+                width={48}
+                height={40}
+                style={{ height: 'auto' }}
+                className="shrink-0"
+              />
+              <div className="h-8 w-px bg-border-standard/40" />
+              <Image
+                src="/logo.png"
+                alt="(RE)SOURCES Relationnelles"
+                width={120}
+                height={30}
+                style={{ height: 'auto' }}
+                className="object-contain"
+              />
             </div>
             <p className="text-sm text-content-muted leading-relaxed font-medium">
               Une plateforme gouvernementale dédiée au soutien à la parentalité.

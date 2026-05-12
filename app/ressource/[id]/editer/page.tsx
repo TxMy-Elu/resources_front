@@ -9,7 +9,9 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { PageHeader } from '@/components/shared/PageHeader';
 import Link from 'next/link';
-import { getResourceById, updateResource, getCategories, ApiCategory } from '@/lib/api';
+import { getResourceById, updateResource } from '@/lib/api';
+import { useCategories } from '@/lib/hooks/useCategories';
+import { RoleGuard } from '@/components/shared/RoleGuard';
 
 const TYPES = [
   { value: 'article',  label: 'Article'  },
@@ -24,7 +26,7 @@ export default function EditRessourcePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const { categories } = useCategories();
   const [formData, setFormData] = useState({
     titre: '',
     description: '',
@@ -43,17 +45,12 @@ export default function EditRessourcePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [resource, cats] = await Promise.all([
-          getResourceById(id),
-          getCategories(),
-        ]);
+        const resource = await getResourceById(id);
 
         if (!resource) {
           setNotFound(true);
           return;
         }
-
-        setCategories(cats);
         setFormData({
           titre:       resource.titre,
           description: resource.description,
@@ -139,6 +136,7 @@ export default function EditRessourcePage() {
   }
 
   return (
+    <RoleGuard required="authenticated">
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       <MainHeader />
       <PageHeader title="Éditer une Ressource" description="Modifiez votre ressource" showBackButton={true} />
@@ -309,5 +307,6 @@ export default function EditRessourcePage() {
 
       <MainFooter />
     </div>
+    </RoleGuard>
   );
 }

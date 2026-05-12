@@ -5,7 +5,7 @@ import { MainHeader } from '@/components/shared/MainHeader';
 import { MainFooter } from '@/components/shared/MainFooter';
 import { RoleGuard } from '@/components/shared/RoleGuard';
 import { Button } from '@/components/ui/button';
-import { Users, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { Users, FileText, CheckCircle, AlertCircle, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { getAdminStats, getPendingResources, AdminStatsResponse, PendingResource } from '@/lib/api';
 
@@ -189,6 +189,12 @@ export default function AdminDashboardPage() {
                   <Link href="/admin/moderation" className="block">
                     <Button className="w-full bg-orange-500 text-white hover:bg-orange-600 h-10 rounded-xl font-semibold text-sm justify-start">
                       → Modération{stats && stats.resources.pending > 0 ? ` (${stats.resources.pending} en attente)` : ''}
+                    </Button>
+                  </Link>
+
+                  <Link href="/admin/categories" className="block">
+                    <Button className="w-full bg-white text-primary hover:bg-primary/5 border border-primary/20 h-10 rounded-xl font-semibold text-sm justify-start flex items-center gap-2">
+                      <Tag className="w-4 h-4" /> Gérer les catégories
                     </Button>
                   </Link>
                 </div>

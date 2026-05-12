@@ -181,7 +181,7 @@ export default function InscriptionPage() {
                   disabled={loading}
                   className="w-full bg-primary text-white hover:bg-primary-700 h-11 rounded-xl font-semibold text-base mt-6 disabled:opacity-50"
                 >
-                  {loading ? 'Inscription en cours...' : 'S&apos;inscrire'}
+                  {loading ? 'Inscription en cours...' : 'S\'inscrire'}
                 </Button>
 
                 <div className="text-center">
@@ -189,11 +189,6 @@ export default function InscriptionPage() {
                 </div>
               </form>
             )}
-
-            <div className="bg-blue-50/70 p-4 rounded-2xl border border-blue-100 shadow-sm text-xs text-blue-800">
-              <p className="font-semibold mb-1">API inscription</p>
-              <p>Cette page cree le compte via l&apos;endpoint documente dans `api.md`.</p>
-            </div>
           </div>
         </div>
       </main>

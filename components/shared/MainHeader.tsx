@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
@@ -51,21 +52,26 @@ export const MainHeader = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo & Branding */}
-          <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-primary-900 leading-none tracking-tighter uppercase italic">Liberté • Égalité • Fraternité</span>
-              <div className="h-0.5 w-12 bg-primary-600 my-0.5" />
-              <span className="text-sm font-extrabold text-primary tracking-tight">RÉPUBLIQUE FRANÇAISE</span>
-            </div>
-            <div className="h-10 w-px bg-border-standard mx-2 hidden sm:block" />
-            <div className="flex flex-col justify-center">
-              <span className="text-lg font-extrabold text-content leading-tight">
-                (RE)SOURCES
-              </span>
-              <span className="text-[10px] font-bold text-secondary uppercase tracking-[0.2em] leading-none">
-                Relationnelles
-              </span>
-            </div>
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image
+              src="/logo-gouvernement.svg"
+              alt="République Française"
+              width={56}
+              height={46}
+              style={{ height: 'auto' }}
+              className="shrink-0"
+            />
+            <div className="h-10 w-px bg-border-standard hidden sm:block" />
+            <Image
+              src="/logo.png"
+              alt="(RE)SOURCES Relationnelles"
+              width={160}
+              height={40}
+              style={{ height: 'auto' }}
+              priority
+              loading="eager"
+              className="hidden sm:block object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation */}
