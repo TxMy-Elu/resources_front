@@ -39,7 +39,6 @@ export default function AdminModerationPage() {
       const approved = resources.find(r => r.id === id);
       if (approved) {
         setResources(prev => prev.filter(r => r.id !== id));
-        setPublishedCount(prev => (prev !== null ? prev + 1 : null));
         alert(`Ressource "${approved.titre}" approuvée et publiée.`);
       }
     } catch (error) {
