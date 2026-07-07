@@ -45,7 +45,7 @@ export function transformApiResourceToFrontend(apiResource: ApiResource): Format
 
   return {
     id: apiResource.id,
-    type: (apiResource.type_ressource?.toLowerCase() || 'article') as any,
+    type: (apiResource.type_ressource?.toLowerCase() || 'article') as FormattedResource['type'],
     title: apiResource.titre,
     description: apiResource.description,
     imageUrl: apiResource.imageUrl || getDefaultImageForType(apiResource.type_ressource),

@@ -80,7 +80,9 @@ export default function ProfilePage() {
       avatar,
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProfile(baseProfile);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormData(baseProfile);
 
     // Charger les stats depuis /api/me

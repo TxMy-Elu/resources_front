@@ -10,7 +10,7 @@ import {
   type AuthUser,
 } from '@/lib/api';
 
-interface User extends AuthUser {}
+type User = AuthUser;
 
 interface AuthContextType {
   user: User | null;
