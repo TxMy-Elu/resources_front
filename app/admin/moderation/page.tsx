@@ -78,7 +78,6 @@ export default function AdminModerationPage() {
       const rejected = resources.find(r => r.id === id);
       if (rejected) {
         setResources(prev => prev.filter(r => r.id !== id));
-        setSuspendedCount(prev => (prev !== null ? prev + 1 : null));
         alert(`Ressource "${rejected.titre}" rejetée.`);
       }
     } catch (error) {
