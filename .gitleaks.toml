@@ -1,0 +1,13 @@
+# Gitleaks configuration — resources_front
+# La clé Supabase anon est une clé publique par conception (accessible côté client).
+# Elle est intentionnellement exposable — Supabase la protège via Row Level Security.
+# Voir : https://supabase.com/docs/guides/api/api-keys
+
+[[rules.allowlist]]
+description = "Supabase anon key — clé publique client (RLS enforced)"
+regexes = [
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYWJrbG5jdnF3cXJsaG5yd2RhIiwicm9sZSI6ImFub24i.*"
+]
+
+[allowlist]
+commits = ["16e7d44"]

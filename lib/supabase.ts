@@ -1,10 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pcabklncvqwqrlhnrwda.supabase.co';
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYWJrbG5jdnF3cXJsaG5yd2RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTY4MTEsImV4cCI6MjA5NDA3MjgxMX0.nipbRAwZMbiDU3OkFtzZhAx-1Yj0mApHNLRYxwLYHB8';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
 const BUCKET = 'Ressources';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
