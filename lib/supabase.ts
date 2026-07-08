@@ -101,7 +101,7 @@ function extractSupabasePath(url: string): string | null {
 }
 
 export function isSupabaseUrl(url: string): boolean {
-  return url.includes(SUPABASE_URL);
+  return url.includes(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '');
 }
 
 /** Télécharge un fichier Supabase via le SDK (gère CORS + nom d'origine) */
